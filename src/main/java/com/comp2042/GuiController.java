@@ -57,6 +57,8 @@ public class GuiController implements Initializable {
         this.controller = controller;
     }
 
+    private boolean spacePressed = false;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
@@ -83,6 +85,9 @@ public class GuiController implements Initializable {
                         keyEvent.consume();
                     }
                     if (keyEvent.getCode() == KeyCode.SPACE) {
+                        if (spacePressed) return;
+                        spacePressed = true;
+
                         DownData data = controller.hardDrop();
                         refreshBrick(data.getViewData());
                         if (data.getClearRow() != null && data.getClearRow().getLinesRemoved() > 0) {
@@ -98,6 +103,13 @@ public class GuiController implements Initializable {
                 }
             }
         });
+
+        gamePanel.setOnKeyReleased(keyEvent -> {
+            if (keyEvent.getCode() == KeyCode.SPACE) {
+                spacePressed = false;
+            }
+        });
+
         gameOverPanel.setVisible(false);
 
         final Reflection reflection = new Reflection();
