@@ -51,6 +51,12 @@ public class GuiController implements Initializable {
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
+    private GameController controller;
+
+    public void setController(GameController controller) {
+        this.controller = controller;
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
@@ -74,6 +80,16 @@ public class GuiController implements Initializable {
                     }
                     if (keyEvent.getCode() == KeyCode.DOWN || keyEvent.getCode() == KeyCode.S) {
                         moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
+                        keyEvent.consume();
+                    }
+                    if (keyEvent.getCode() == KeyCode.SPACE) {
+                        DownData data = controller.hardDrop();
+                        refreshBrick(data.getViewData());
+                        if (data.getClearRow() != null && data.getClearRow().getLinesRemoved() > 0) {
+                            NotificationPanel p = new NotificationPanel("+" + data.getClearRow().getScoreBonus());
+                            groupNotification.getChildren().add(p);
+                            p.showScore(groupNotification.getChildren());
+                        }
                         keyEvent.consume();
                     }
                 }

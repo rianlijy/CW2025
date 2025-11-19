@@ -38,6 +38,18 @@ public class GameController implements InputEventListener {
         return new DownData(clearRow, board.getViewData());
     }
 
+    public DownData hardDrop() {
+        while (board.moveBrickDown()) {
+        }
+        board.mergeBrickToBackground();
+        ClearRow clearRow = board.clearRows();
+        if (board.createNewBrick()) {
+            viewGuiController.gameOver();
+        }
+        viewGuiController.refreshGameBackground(board.getBoardMatrix());
+        return new DownData(clearRow, board.getViewData());
+    }
+
     @Override
     public ViewData onLeftEvent(MoveEvent event) {
         board.moveBrickLeft();
