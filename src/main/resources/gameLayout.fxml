@@ -9,6 +9,7 @@
 <Pane fx:controller="com.comp2042.GuiController"
       xmlns:fx="http://javafx.com/fxml">
     <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
+    <GridPane fx:id="ghostPanel" layoutX="0" layoutY="0" pickOnBounds="false" mouseTransparent="true"/>
     <BorderPane styleClass="gameBoard" fx:id="gameBoard">
         <center>
             <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
