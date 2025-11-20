@@ -160,7 +160,7 @@ public class GuiController implements Initializable {
                 Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
                 rectangle.setFill(Color.TRANSPARENT);
                 rectangle.setStroke(Color.WHITE);
-                rectangle.setStrokeWidth(2);
+                rectangle.setStrokeWidth(1);
                 rectangle.setArcWidth(0);
                 rectangle.setArcHeight(0);
                 rectangle.setVisible(false);
