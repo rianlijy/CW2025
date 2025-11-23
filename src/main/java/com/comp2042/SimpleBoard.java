@@ -3,6 +3,7 @@ package com.comp2042;
 import com.comp2042.logic.bricks.Brick;
 import com.comp2042.logic.bricks.BrickGenerator;
 import com.comp2042.logic.bricks.RandomBrickGenerator;
+import com.comp2042.logic.bricks.SevenBagGenerator;
 
 import java.awt.*;
 
@@ -20,7 +21,7 @@ public class SimpleBoard implements Board {
         this.width = width;
         this.height = height;
         currentGameMatrix = new int[width][height];
-        brickGenerator = new RandomBrickGenerator();
+        brickGenerator = new SevenBagGenerator();
         brickRotator = new BrickRotator();
         score = new Score();
     }
