@@ -7,16 +7,33 @@
 <?import javafx.scene.text.Text?>
 <?import java.net.URL?>
 <StackPane fx:controller="com.comp2042.GuiController"
-           xmlns:fx="http://javafx.com/fxml">
-    <BorderPane fx:id="gameBoard" styleClass="gameBoard" prefWidth="200" prefHeight="400" maxWidth="200" maxHeight="400" StackPane.alignment="CENTER">
-        <center>
-            <StackPane alignment="CENTER">
+           xmlns:fx="http://javafx.com/fxml"
+           alignment="CENTER">
+    <HBox alignment="CENTER" spacing="0">
+        <VBox fx:id="leftDummy"
+              prefWidth="120"
+              prefHeight="400"
+              alignment="CENTER"
+              style="-fx-border-color: red; -fx-border-width: 2;" />
+        <BorderPane fx:id="gameBoard"
+                    styleClass="gameBoard"
+                    prefWidth="200" prefHeight="400"
+                    maxWidth="200" maxHeight="400">
+            <center>
                 <GridPane fx:id="gamePanel"
                           hgap="1"
-                          vgap="1" />
-            </StackPane>
-        </center>
-    </BorderPane>
+                          vgap="1"
+                          alignment="CENTER" />
+            </center>
+        </BorderPane>
+        <VBox fx:id="previewBox"
+              prefWidth="120"
+              prefHeight="400"
+              alignment="CENTER"
+              spacing="10"
+              style="-fx-padding: 10; -fx-border-color: red; -fx-border-width: 2;" />
+
+    </HBox>
     <Group fx:id="groupNotification"
            StackPane.alignment="CENTER">
         <VBox alignment="CENTER">
@@ -27,4 +44,6 @@
         <URL value="@window_style.css"/>
     </stylesheets>
 </StackPane>
+
+
 

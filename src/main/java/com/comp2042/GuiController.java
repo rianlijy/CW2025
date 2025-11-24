@@ -19,6 +19,10 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
+import javafx.scene.layout.VBox;
+import java.util.ArrayList;
+import java.util.List;
+
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -35,6 +39,15 @@ public class GuiController implements Initializable {
 
     @FXML
     private GameOverPanel gameOverPanel;
+
+    @FXML
+    private VBox previewBox;
+
+    private final List<GridPane> previewGrids = new ArrayList<>();
+
+    private final List<Rectangle[][]> previewRectangles = new ArrayList<>();
+
+    private static final int PREVIEW_CELL = 12; // size for preview rectangles
 
     private Rectangle[][] displayMatrix;
 
@@ -202,6 +215,7 @@ public class GuiController implements Initializable {
                 }
             }
         }
+        initializePreviewPanels();
 
         timeLine = new Timeline(new KeyFrame(
                 Duration.millis(400),
@@ -337,5 +351,63 @@ public class GuiController implements Initializable {
 
     public void pauseGame(ActionEvent actionEvent) {
         gamePanel.requestFocus();
+    }
+
+    private void initializePreviewPanels() {
+        // Clear existing preview grids (keep label if you have one)
+        previewBox.getChildren().removeIf(node -> node instanceof GridPane);
+
+        previewGrids.clear();
+        previewRectangles.clear();
+
+        // Create 5 preview grids, each 4×4 squares
+        for (int k = 0; k < 5; k++) {
+            GridPane mini = new GridPane();
+            mini.setHgap(1);
+            mini.setVgap(1);
+
+            Rectangle[][] rects = new Rectangle[4][4];
+
+            for (int r = 0; r < 4; r++) {
+                for (int c = 0; c < 4; c++) {
+                    Rectangle rect = new Rectangle(PREVIEW_CELL, PREVIEW_CELL);
+                    rect.setFill(Color.TRANSPARENT);
+                    rect.setArcWidth(0);
+                    rect.setArcHeight(0);
+
+                    mini.add(rect, c, r);
+                    rects[r][c] = rect;
+                }
+            }
+
+            previewGrids.add(mini);
+            previewRectangles.add(rects);
+
+            previewBox.getChildren().add(mini);
+        }
+    }
+
+    public void updatePreview(ViewData view) {
+        List<int[][]> nextFive = view.getNextFive();
+
+        for (int idx = 0; idx < previewRectangles.size(); idx++) {
+            Rectangle[][] rects = previewRectangles.get(idx);
+            int[][] mat = nextFive.get(idx);
+
+            for (int r = 0; r < 4; r++) {
+                for (int c = 0; c < 4; c++) {
+                    int val = mat[r][c];
+                    Rectangle rect = rects[r][c];
+
+                    if (val == 0) {
+                        rect.setFill(Color.TRANSPARENT);
+                        rect.setVisible(false);
+                    } else {
+                        rect.setFill(getFillColor(val));
+                        rect.setVisible(true);
+                    }
+                }
+            }
+        }
     }
 }

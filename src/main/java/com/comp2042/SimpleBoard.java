@@ -4,6 +4,10 @@ import com.comp2042.logic.bricks.Brick;
 import com.comp2042.logic.bricks.BrickGenerator;
 import com.comp2042.logic.bricks.RandomBrickGenerator;
 import com.comp2042.logic.bricks.SevenBagGenerator;
+import java.util.Deque;
+import java.util.ArrayDeque;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import java.awt.*;
 
@@ -16,6 +20,7 @@ public class SimpleBoard implements Board {
     private int[][] currentGameMatrix;
     private Point currentOffset;
     private final Score score;
+    private final Deque<com.comp2042.logic.bricks.Brick> nextFive = new ArrayDeque<>();
 
     public SimpleBoard(int width, int height) {
         this.width = width;
@@ -24,6 +29,16 @@ public class SimpleBoard implements Board {
         brickGenerator = new SevenBagGenerator();
         brickRotator = new BrickRotator();
         score = new Score();
+        for (int i = 0; i < 5; i++) {
+            nextFive.add(brickGenerator.getBrick());
+        }
+    }
+
+    public List<int[][]> getNextFiveMatrices() {
+        return nextFive.stream()
+                .map(b -> b.getShapeMatrix().get(0)) // use default orientation
+                .map(MatrixOperations::copy)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -101,10 +116,17 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean createNewBrick() {
-        Brick currentBrick = brickGenerator.getBrick();
+        // consume next from queue
+        com.comp2042.logic.bricks.Brick currentBrick = nextFive.poll();
+        // refill queue
+        nextFive.add(brickGenerator.getBrick());
+
         brickRotator.setBrick(currentBrick);
         currentOffset = new Point(3, 0);
-        return MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
+        return MatrixOperations.intersect(currentGameMatrix,
+                brickRotator.getCurrentShape(),
+                (int) currentOffset.getX(),
+                (int) currentOffset.getY());
     }
 
     @Override
@@ -115,7 +137,16 @@ public class SimpleBoard implements Board {
     @Override
     public ViewData getViewData() {
         Point ghostPoint = computeGhostPosition();
-        return new ViewData(brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY(), brickGenerator.getNextBrick().getShapeMatrix().get(0), brickRotator.getCurrentShape(), ghostPoint.x, ghostPoint.y);
+        List<int[][]> nextFiveMatrices = getNextFiveMatrices();
+        return new ViewData(
+                brickRotator.getCurrentShape(),
+                (int) currentOffset.getX(),
+                (int) currentOffset.getY(),
+                nextFiveMatrices,
+                brickRotator.getCurrentShape(),
+                ghostPoint.x,
+                ghostPoint.y
+        );
     }
 
     private Point computeGhostPosition() {
