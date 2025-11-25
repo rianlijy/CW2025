@@ -9,11 +9,14 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
@@ -42,6 +45,13 @@ public class GuiController implements Initializable {
 
     @FXML
     private VBox previewBox;
+
+    @FXML
+    private VBox leftDummy; // ensure your FXML leftDummy has fx:id="leftDummy"
+
+    private GridPane holdGrid;
+    private Rectangle[][] holdRects;
+    private static final int HOLD_CELL = 12;
 
     private final List<GridPane> previewGrids = new ArrayList<>();
 
@@ -74,6 +84,25 @@ public class GuiController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
+        // prevent VBox children (leftDummy / previewBox) from being stretched to match gameBoard height
+        previewBox.setFillWidth(false);                // keep children from filling width (ok to keep)
+        leftDummy.setFillWidth(false);
+
+// lock VBoxes to their preferred sizes so HBox won't force them taller
+        previewBox.setMaxHeight(Region.USE_PREF_SIZE);
+        leftDummy.setMaxHeight(Region.USE_PREF_SIZE);
+
+// allow their prefHeight to be computed from content rather than fixed values
+        previewBox.setPrefHeight(Region.USE_COMPUTED_SIZE);
+        leftDummy.setPrefHeight(Region.USE_COMPUTED_SIZE);
+
+// extra safety: ensure any GridPanes you add don't get forced taller by their parent
+        previewBox.getChildren().forEach(n -> {
+            if (n instanceof Region) {
+                ((Region) n).setMaxHeight(Region.USE_PREF_SIZE);
+                VBox.setVgrow(n, javafx.scene.layout.Priority.NEVER);
+            }
+        });
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
         gamePanel.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -107,6 +136,13 @@ public class GuiController implements Initializable {
                             groupNotification.getChildren().add(p);
                             p.showScore(groupNotification.getChildren());
                         }
+                        keyEvent.consume();
+                    }
+
+                    if (keyEvent.getCode() == KeyCode.SHIFT || keyEvent.getCode() == KeyCode.C) {
+                        ViewData data = controller.hold();  // call GameController.hold()
+                        refreshBrick(data);                 // redraw current piece
+                        updateHold(data);                   // redraw the hold panel
                         keyEvent.consume();
                     }
                 }
@@ -216,6 +252,7 @@ public class GuiController implements Initializable {
             }
         }
         initializePreviewPanels();
+        initializeHoldPanel();
 
         timeLine = new Timeline(new KeyFrame(
                 Duration.millis(400),
@@ -343,6 +380,7 @@ public class GuiController implements Initializable {
         timeLine.stop();
         gameOverPanel.setVisible(false);
         eventListener.createNewGame();
+        updateHold(new ViewData(new int[0][0], 0, 0, null, new int[0][0], 0, 0, new int[4][4]));
         gamePanel.requestFocus();
         timeLine.play();
         isPause.setValue(Boolean.FALSE);
@@ -354,17 +392,15 @@ public class GuiController implements Initializable {
     }
 
     private void initializePreviewPanels() {
-        // Clear existing preview grids (keep label if you have one)
         previewBox.getChildren().removeIf(node -> node instanceof GridPane);
-
         previewGrids.clear();
         previewRectangles.clear();
 
-        // Create 5 preview grids, each 4×4 squares
-        for (int k = 0; k < 5; k++) {
+        for (int i = 0; i < 5; i++) {
             GridPane mini = new GridPane();
             mini.setHgap(1);
             mini.setVgap(1);
+            mini.setAlignment(Pos.CENTER);
 
             Rectangle[][] rects = new Rectangle[4][4];
 
@@ -372,20 +408,18 @@ public class GuiController implements Initializable {
                 for (int c = 0; c < 4; c++) {
                     Rectangle rect = new Rectangle(PREVIEW_CELL, PREVIEW_CELL);
                     rect.setFill(Color.TRANSPARENT);
-                    rect.setArcWidth(0);
-                    rect.setArcHeight(0);
-
+                    rect.setVisible(false);
                     mini.add(rect, c, r);
                     rects[r][c] = rect;
                 }
             }
 
+            previewBox.getChildren().add(mini);
             previewGrids.add(mini);
             previewRectangles.add(rects);
-
-            previewBox.getChildren().add(mini);
         }
     }
+
 
     public void updatePreview(ViewData view) {
         List<int[][]> nextFive = view.getNextFive();
@@ -393,21 +427,79 @@ public class GuiController implements Initializable {
         for (int idx = 0; idx < previewRectangles.size(); idx++) {
             Rectangle[][] rects = previewRectangles.get(idx);
             int[][] mat = nextFive.get(idx);
+            int[] b = getBounds(mat);
 
             for (int r = 0; r < 4; r++) {
                 for (int c = 0; c < 4; c++) {
-                    int val = mat[r][c];
                     Rectangle rect = rects[r][c];
 
-                    if (val == 0) {
-                        rect.setFill(Color.TRANSPARENT);
+                    if (r < b[0] || r > b[1] || c < b[2] || c > b[3] || mat[r][c] == 0) {
                         rect.setVisible(false);
                     } else {
-                        rect.setFill(getFillColor(val));
+                        rect.setFill(getFillColor(mat[r][c]));
                         rect.setVisible(true);
                     }
                 }
             }
         }
     }
+
+    private void initializeHoldPanel() {
+        holdGrid = new GridPane();
+        holdGrid.setHgap(1);
+        holdGrid.setVgap(1);
+        holdGrid.setAlignment(Pos.CENTER);
+
+        holdRects = new Rectangle[4][4];
+
+        for (int r = 0; r < 4; r++) {
+            for (int c = 0; c < 4; c++) {
+                Rectangle rect = new Rectangle(HOLD_CELL, HOLD_CELL);
+                rect.setFill(Color.TRANSPARENT);
+                rect.setVisible(false);
+                holdGrid.add(rect, c, r);
+                holdRects[r][c] = rect;
+            }
+        }
+
+        leftDummy.getChildren().add(holdGrid);
+
+    }
+
+    public void updateHold(ViewData view) {
+        int[][] mat = view.getHeldBrick();
+        int[] b = getBounds(mat);
+
+        for (int r = 0; r < 4; r++) {
+            for (int c = 0; c < 4; c++) {
+                Rectangle rect = holdRects[r][c];
+
+                if (r < b[0] || r > b[1] || c < b[2] || c > b[3] || mat[r][c] == 0) {
+                    rect.setVisible(false);
+                } else {
+                    rect.setFill(getFillColor(mat[r][c]));
+                    rect.setVisible(true);
+                }
+            }
+        }
+    }
+
+
+    private int[] getBounds(int[][] mat) {
+        int minR = 4, maxR = -1;
+        int minC = 4, maxC = -1;
+
+        for (int r = 0; r < 4; r++) {
+            for (int c = 0; c < 4; c++) {
+                if (mat[r][c] != 0) {
+                    if (r < minR) minR = r;
+                    if (r > maxR) maxR = r;
+                    if (c < minC) minC = c;
+                    if (c > maxC) maxC = c;
+                }
+            }
+        }
+        return new int[]{minR, maxR, minC, maxC};
+    }
+
 }

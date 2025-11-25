@@ -70,3 +70,8 @@
     -fx-fill: yellow;
     -fx-text-fill: yellow;
 }
+
+.gameBoard {
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+}

@@ -21,6 +21,8 @@ public class SimpleBoard implements Board {
     private Point currentOffset;
     private final Score score;
     private final Deque<com.comp2042.logic.bricks.Brick> nextFive = new ArrayDeque<>();
+    private Brick heldBrick = null;
+    private boolean holdUsed = false;
 
     public SimpleBoard(int width, int height) {
         this.width = width;
@@ -123,6 +125,7 @@ public class SimpleBoard implements Board {
 
         brickRotator.setBrick(currentBrick);
         currentOffset = new Point(3, 0);
+        holdUsed = false;
         return MatrixOperations.intersect(currentGameMatrix,
                 brickRotator.getCurrentShape(),
                 (int) currentOffset.getX(),
@@ -145,7 +148,8 @@ public class SimpleBoard implements Board {
                 nextFiveMatrices,
                 brickRotator.getCurrentShape(),
                 ghostPoint.x,
-                ghostPoint.y
+                ghostPoint.y,
+                getHeldMatrix()
         );
     }
 
@@ -183,6 +187,46 @@ public class SimpleBoard implements Board {
     public void newGame() {
         currentGameMatrix = new int[width][height];
         score.reset();
+        heldBrick = null;
+        holdUsed = false;
         createNewBrick();
+    }
+
+    public ViewData holdPiece() {
+        if (holdUsed) {
+            return getViewData();
+        }
+
+        holdUsed = true;
+        com.comp2042.logic.bricks.Brick current = brickRotator.getBrick();
+
+        if (current == null) {
+            return getViewData();
+        }
+
+        if (heldBrick == null) {
+            // store current and spawn next
+            heldBrick = current;
+            // spawn new brick from queue
+            createNewBrick();
+        } else {
+            // swap current and held
+            com.comp2042.logic.bricks.Brick tmp = heldBrick;
+            heldBrick = current;
+            brickRotator.setBrick(tmp);
+            currentOffset = new Point(3, 0);
+            // Note: don't call createNewBrick() here because we replaced the current brick
+        }
+
+        // After holding/swap we should return the updated view
+        return getViewData();
+    }
+    public int[][] getHeldMatrix() {
+        if (heldBrick == null) {
+            // return an empty 4x4 (keeps UI code simple)
+            return new int[4][4];
+        }
+        // return the default orientation shape (copy defensively)
+        return MatrixOperations.copy(heldBrick.getShapeMatrix().get(0));
     }
 }

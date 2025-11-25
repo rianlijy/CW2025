@@ -79,4 +79,10 @@ public class GameController implements InputEventListener {
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
         viewGuiController.updatePreview(board.getViewData());
     }
+
+    public ViewData hold() {
+        ViewData data = ((SimpleBoard) board).holdPiece();
+        viewGuiController.updateHold(data);
+        return data;
+    }
 }

@@ -26,5 +26,10 @@ public class BrickRotator {
         currentShape = 0;
     }
 
+    public com.comp2042.logic.bricks.Brick getBrick() {
+        return this.brick;
+    }
+
+
 
 }
