@@ -189,6 +189,10 @@ public class SimpleBoard implements Board {
         score.reset();
         heldBrick = null;
         holdUsed = false;
+        nextFive.clear();
+        for (int i = 0; i < 5; i++) {
+            nextFive.add(brickGenerator.getBrick());
+        }
         createNewBrick();
     }
 

@@ -47,7 +47,7 @@ public class GuiController implements Initializable {
     private VBox previewBox;
 
     @FXML
-    private VBox leftDummy; // ensure your FXML leftDummy has fx:id="leftDummy"
+    private VBox leftDummy;
 
     private GridPane holdGrid;
     private Rectangle[][] holdRects;
@@ -57,7 +57,7 @@ public class GuiController implements Initializable {
 
     private final List<Rectangle[][]> previewRectangles = new ArrayList<>();
 
-    private static final int PREVIEW_CELL = 12; // size for preview rectangles
+    private static final int PREVIEW_CELL = 12;
 
     private Rectangle[][] displayMatrix;
 
@@ -84,19 +84,12 @@ public class GuiController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
-        // prevent VBox children (leftDummy / previewBox) from being stretched to match gameBoard height
-        previewBox.setFillWidth(false);                // keep children from filling width (ok to keep)
+        previewBox.setFillWidth(false);
         leftDummy.setFillWidth(false);
-
-// lock VBoxes to their preferred sizes so HBox won't force them taller
         previewBox.setMaxHeight(Region.USE_PREF_SIZE);
         leftDummy.setMaxHeight(Region.USE_PREF_SIZE);
-
-// allow their prefHeight to be computed from content rather than fixed values
         previewBox.setPrefHeight(Region.USE_COMPUTED_SIZE);
         leftDummy.setPrefHeight(Region.USE_COMPUTED_SIZE);
-
-// extra safety: ensure any GridPanes you add don't get forced taller by their parent
         previewBox.getChildren().forEach(n -> {
             if (n instanceof Region) {
                 ((Region) n).setMaxHeight(Region.USE_PREF_SIZE);
@@ -140,9 +133,9 @@ public class GuiController implements Initializable {
                     }
 
                     if (keyEvent.getCode() == KeyCode.SHIFT || keyEvent.getCode() == KeyCode.C) {
-                        ViewData data = controller.hold();  // call GameController.hold()
-                        refreshBrick(data);                 // redraw current piece
-                        updateHold(data);                   // redraw the hold panel
+                        ViewData data = controller.hold();
+                        refreshBrick(data);
+                        updateHold(data);
                         keyEvent.consume();
                     }
                 }
