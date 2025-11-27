@@ -53,6 +53,9 @@ public class GuiController implements Initializable {
     @FXML
     private Label scoreLabel;
 
+    @FXML
+    private Label pauseLabel;
+
     private GridPane holdGrid;
     private Rectangle[][] holdRects;
     private static final int HOLD_CELL = 12;
@@ -138,6 +141,10 @@ public class GuiController implements Initializable {
                         updateHold(data);
                         keyEvent.consume();
                     }
+                }
+                if (keyEvent.getCode() == KeyCode.P || keyEvent.getCode() == KeyCode.ESCAPE) {
+                    togglePause();
+                    keyEvent.consume();
                 }
                 if (keyEvent.getCode() == KeyCode.N) {
                     newGame(null);
@@ -379,6 +386,7 @@ public class GuiController implements Initializable {
         timeLine.play();
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
+        pauseLabel.setVisible(false);
     }
 
     public void pauseGame(ActionEvent actionEvent) {
@@ -496,4 +504,28 @@ public class GuiController implements Initializable {
         return new int[]{minR, maxR, minC, maxC};
     }
 
+    private void togglePause() {
+        if (isGameOver.get()) return;
+
+        boolean current = isPause.get();
+        isPause.set(!current);
+
+        if (isPause.get()) {
+            timeLine.pause();
+            showPauseOverlay();
+        } else {
+            hidePauseOverlay();
+            timeLine.play();
+        }
+
+        gamePanel.requestFocus();
+    }
+
+    private void showPauseOverlay() {
+        pauseLabel.setVisible(true);
+    }
+
+    private void hidePauseOverlay() {
+        pauseLabel.setVisible(false);
+    }
 }

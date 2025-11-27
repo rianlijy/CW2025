@@ -69,6 +69,11 @@
            StackPane.alignment="CENTER">
         <VBox alignment="CENTER">
             <GameOverPanel fx:id="gameOverPanel"/>
+            <Label fx:id="pauseLabel"
+                   text="PAUSED"
+                   styleClass="gameOverStyle"
+                   visible="false"
+                   alignment="CENTER"/>
         </VBox>
     </Group>
     <stylesheets>
