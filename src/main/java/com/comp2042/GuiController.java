@@ -25,6 +25,7 @@ import javafx.util.Duration;
 import javafx.scene.layout.VBox;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.scene.control.Label;
 
 
 import java.net.URL;
@@ -48,6 +49,9 @@ public class GuiController implements Initializable {
 
     @FXML
     private VBox leftDummy;
+
+    @FXML
+    private Label scoreLabel;
 
     private GridPane holdGrid;
     private Rectangle[][] holdRects;
@@ -86,10 +90,6 @@ public class GuiController implements Initializable {
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
         previewBox.setFillWidth(false);
         leftDummy.setFillWidth(false);
-        previewBox.setMaxHeight(Region.USE_PREF_SIZE);
-        leftDummy.setMaxHeight(Region.USE_PREF_SIZE);
-        previewBox.setPrefHeight(Region.USE_COMPUTED_SIZE);
-        leftDummy.setPrefHeight(Region.USE_COMPUTED_SIZE);
         previewBox.getChildren().forEach(n -> {
             if (n instanceof Region) {
                 ((Region) n).setMaxHeight(Region.USE_PREF_SIZE);
@@ -360,7 +360,8 @@ public class GuiController implements Initializable {
         this.eventListener = eventListener;
     }
 
-    public void bindScore(IntegerProperty integerProperty) {
+    public void bindScore(IntegerProperty scoreProperty) {
+        scoreLabel.textProperty().bind(scoreProperty.asString());
     }
 
     public void gameOver() {

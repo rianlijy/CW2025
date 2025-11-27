@@ -19,13 +19,26 @@
             <VBox fx:id="leftDummy"
                   alignment="CENTER"
                   spacing="5"
-                  minWidth="100"
-                  maxWidth="100"
+                  prefHeight="100"
                   minHeight="100"
                   maxHeight="100"
+                  prefWidth="100"
+                  minWidth="100"
+                  maxWidth="100"
                   style="-fx-border-color: red; -fx-border-width: 2; -fx-padding: 0;">
             </VBox>
+            <Region prefHeight="305"/>
+
+            <Label text="SCORE"
+                   styleClass="nextBrickLabel"
+                   alignment="CENTER" />
+            <Label fx:id="scoreLabel"
+                   styleClass="scoreClass"
+                   text="0"
+                   alignment="CENTER"/>
+            <Region prefHeight="30"/>
         </VBox>
+
         <BorderPane fx:id="gameBoard"
                     styleClass="gameBoard"
                     prefWidth="200" prefHeight="400"
@@ -43,10 +56,13 @@
                    alignment="CENTER" />
             <VBox fx:id="previewBox"
                   alignment="CENTER"
-                  spacing="0"
-                  style="-fx-border-color:red; -fx-border-width:2; -fx-padding:0;"
-                  prefWidth="120">
+                  spacing="5"
+                  prefWidth="120"
+                  minWidth="120"
+                  maxWidth="120"
+                  style="-fx-border-color:red; -fx-border-width:2; -fx-padding:0;">
             </VBox>
+            <Region prefHeight="250"/>
         </VBox>
     </HBox>
     <Group fx:id="groupNotification"

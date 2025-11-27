@@ -42,10 +42,19 @@ public class GameController implements InputEventListener {
     }
 
     public DownData hardDrop() {
+        int rowsDropped = 0;
         while (board.moveBrickDown()) {
+            rowsDropped++;
+        }
+        if (rowsDropped > 0) {
+            board.getScore().add(rowsDropped);
         }
         board.mergeBrickToBackground();
         ClearRow clearRow = board.clearRows();
+
+        if (clearRow.getLinesRemoved() > 0) {
+            board.getScore().add(clearRow.getScoreBonus());
+        }
         if (board.createNewBrick()) {
             viewGuiController.gameOver();
         }
