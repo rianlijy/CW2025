@@ -194,7 +194,7 @@ public class GuiController implements Initializable {
         for (int i = 2; i < TOTAL_ROWS; i++) {
             for (int j = 0; j < TOTAL_COLS; j++) {
                 Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
-                rectangle.setFill(Color.TRANSPARENT);
+                rectangle.getStyleClass().add("gameCell");
                 rectangle.setArcWidth(0);
                 rectangle.setArcHeight(0);
                 displayMatrix[i][j] = rectangle;
@@ -345,11 +345,17 @@ public class GuiController implements Initializable {
     }
 
     private void setRectangleData(int color, Rectangle rectangle) {
-        rectangle.setFill(getFillColor(color));
+        if (color == 0) {
+            rectangle.getStyleClass().setAll("gameCell");
+            rectangle.setFill(Color.TRANSPARENT);
+        } else {
+            rectangle.getStyleClass().remove("gameCell");
+            rectangle.setFill(getFillColor(color));
+        }
+
         rectangle.setArcHeight(0);
         rectangle.setArcWidth(0);
     }
-
     private void moveDown(MoveEvent event) {
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onDownEvent(event);

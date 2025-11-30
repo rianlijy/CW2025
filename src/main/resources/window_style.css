@@ -75,3 +75,9 @@
     -fx-padding: 0;
     -fx-background-insets: 0;
 }
+
+.gameCell {
+    -fx-fill: #111111;            /* dark background for each tile */
+    -fx-stroke: #2d2d2d;          /* grid line color */
+    -fx-stroke-width: 1;          /* grid line thickness */
+}
