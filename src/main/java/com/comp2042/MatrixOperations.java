@@ -88,7 +88,13 @@ public class MatrixOperations {
                 break;
             }
         }
-        int scoreBonus = 50 * clearedRows.size() * clearedRows.size();
+        int scoreBonus = switch(clearedRows.size()) {
+            case 1 -> 100;
+            case 2 -> 300;
+            case 3 -> 500;
+            case 4 -> 800;
+            default -> 0;
+        };
         return new ClearRow(clearedRows.size(), tmp, scoreBonus);
     }
 
