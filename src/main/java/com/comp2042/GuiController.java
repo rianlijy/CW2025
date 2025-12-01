@@ -54,6 +54,9 @@ public class GuiController implements Initializable {
     private Label scoreLabel;
 
     @FXML
+    private Label levelLabel;
+
+    @FXML
     private Label pauseLabel;
 
     private GridPane holdGrid;
@@ -84,6 +87,17 @@ public class GuiController implements Initializable {
 
     public void setController(GameController controller) {
         this.controller = controller;
+        controller.getBoard().getScore().levelProperty().addListener((obs, oldV, newV) -> {
+            int level = newV.intValue();
+            double newSpeed = Math.max(200, 600 - (level - 1) * 100);  // caps at 100ms
+
+            timeLine.stop();
+            timeLine.getKeyFrames().setAll(new KeyFrame(
+                    Duration.millis(newSpeed),
+                    ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
+            ));
+            timeLine.play();
+        });
     }
 
     private boolean spacePressed = false;
@@ -128,7 +142,10 @@ public class GuiController implements Initializable {
                         DownData data = controller.hardDrop();
                         refreshBrick(data.getViewData());
                         if (data.getClearRow() != null && data.getClearRow().getLinesRemoved() > 0) {
-                            NotificationPanel p = new NotificationPanel("+" + data.getClearRow().getScoreBonus());
+                            int baseBonus = data.getClearRow().getScoreBonus();
+                            int level = controller.getBoard().getScore().getLevel();
+                            int displayBonus = baseBonus * level;
+                            NotificationPanel p = new NotificationPanel("+" + displayBonus);
                             groupNotification.getChildren().add(p);
                             p.showScore(groupNotification.getChildren());
                         }
@@ -255,7 +272,7 @@ public class GuiController implements Initializable {
         initializeHoldPanel();
 
         timeLine = new Timeline(new KeyFrame(
-                Duration.millis(400),
+                Duration.millis(600),
                 ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
         ));
         timeLine.setCycleCount(Timeline.INDEFINITE);
@@ -341,7 +358,10 @@ public class GuiController implements Initializable {
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onDownEvent(event);
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
-                NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
+                int baseBonus = downData.getClearRow().getScoreBonus();
+                int level = controller.getBoard().getScore().getLevel();
+                int displayBonus = baseBonus * level;
+                NotificationPanel notificationPanel = new NotificationPanel("+" + displayBonus);
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
             }
@@ -506,6 +526,10 @@ public class GuiController implements Initializable {
         }
 
         gamePanel.requestFocus();
+    }
+
+    public void bindLevel(IntegerProperty levelProperty) {
+        levelLabel.textProperty().bind(levelProperty.asString());
     }
 
     private void showPauseOverlay() {

@@ -12,7 +12,7 @@
     <HBox alignment="CENTER"
           spacing="0"
           style="-fx-padding:0; -fx-spacing:0;">
-        <VBox alignment="CENTER" spacing="5">
+        <VBox alignment="CENTER">
             <Label text="HOLD"
                    styleClass="nextBrickLabel"
                    alignment="CENTER" />
@@ -23,7 +23,7 @@
                   prefWidth="100"
                   styleClass="holdPanel">
             </VBox>
-            <Region prefHeight="305"/>
+            <Region prefHeight="247"/>
 
             <Label text="SCORE"
                    styleClass="nextBrickLabel"
@@ -32,7 +32,14 @@
                    styleClass="scoreClass"
                    text="0"
                    alignment="CENTER"/>
-            <Region prefHeight="31"/>
+            <Label text="LEVEL"
+                   styleClass="nextBrickLabel"
+                   alignment="CENTER"/>
+            <Label fx:id="levelLabel"
+                   styleClass="scoreClass"
+                   text="1"
+                   alignment="CENTER"/>
+            <Region prefHeight="30"/>
         </VBox>
 
         <BorderPane fx:id="gameBoard"
