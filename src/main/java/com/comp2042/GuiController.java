@@ -264,37 +264,16 @@ public class GuiController implements Initializable {
     }
 
     private Paint getFillColor(int i) {
-        Paint returnPaint;
-        switch (i) {
-            case 0:
-                returnPaint = Color.TRANSPARENT;
-                break;
-            case 1:
-                returnPaint = Color.AQUA;
-                break;
-            case 2:
-                returnPaint = Color.BLUEVIOLET;
-                break;
-            case 3:
-                returnPaint = Color.DARKGREEN;
-                break;
-            case 4:
-                returnPaint = Color.YELLOW;
-                break;
-            case 5:
-                returnPaint = Color.RED;
-                break;
-            case 6:
-                returnPaint = Color.BEIGE;
-                break;
-            case 7:
-                returnPaint = Color.BURLYWOOD;
-                break;
-            default:
-                returnPaint = Color.WHITE;
-                break;
-        }
-        return returnPaint;
+        return switch (i) {
+            case 1 -> Color.web("#00AFFF"); // I
+            case 2 -> Color.web("#B044FF"); // J
+            case 3 -> Color.web("#FF2DAE"); // L
+            case 4 -> Color.web("#FFF65B"); // O
+            case 5 -> Color.web("#63FFA7"); // S
+            case 6 -> Color.web("#FF4E3D"); // Z
+            case 7 -> Color.web("#FF6BFA"); // T
+            default -> Color.BLACK;
+        };
     }
 
     private void refreshBrick(ViewData brick) {

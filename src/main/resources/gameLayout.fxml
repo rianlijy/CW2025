@@ -60,7 +60,8 @@
         </VBox>
     </HBox>
     <Group fx:id="groupNotification"
-           StackPane.alignment="CENTER">
+           StackPane.alignment="CENTER"
+           translateX="-9">
         <VBox alignment="CENTER">
             <GameOverPanel fx:id="gameOverPanel"/>
             <Label fx:id="pauseLabel"
