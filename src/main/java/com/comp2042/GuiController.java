@@ -349,7 +349,9 @@ public class GuiController implements Initializable {
             rectangle.getStyleClass().setAll("gameCell");
             rectangle.setFill(Color.TRANSPARENT);
         } else {
-            rectangle.getStyleClass().remove("gameCell");
+            if (!rectangle.getStyleClass().contains("gameCell")) {
+                rectangle.getStyleClass().add("gameCell");
+            }
             rectangle.setFill(getFillColor(color));
         }
 
