@@ -9,7 +9,7 @@
 }
 
 .gameBoard {
-    -fx-border-color: #2A5058;
+    -fx-border-color: #00E5FF;
     -fx-border-width: 6px;
     -fx-border-radius: 0 0 9px 9px;
 }
@@ -18,7 +18,7 @@
     -fx-font-family: "Let's go Digital";
     -fx-padding: 20px 0 0 0;
     -fx-font-size: 16px;
-    -fx-text-fill: yellow;
+    -fx-text-fill: #CFFFFF;
 }
 
 .ipad-dark-grey {
@@ -68,7 +68,7 @@
     -fx-font-family: "Let's go Digital";
     -fx-font-size: 38;
     -fx-fill: yellow;
-    -fx-text-fill: yellow;
+    -fx-text-fill: #CFFFFF;
 }
 
 .gameBoard {
@@ -83,20 +83,24 @@
 }
 
 .holdPanel {
-    -fx-border-width: 9px 0px 9px 9px;
+    -fx-border-width: 6px 0px 6px 6px;
     -fx-border-radius: 12px 0 0 12px;
     -fx-background-radius: 3px 0 0 3px;
-    -fx-background-insets: 9px 0px 9px 9px;
+    -fx-background-insets: 6px 0px 6px 6px;
 }
 
 .previewPanel {
-    -fx-border-width: 9px 9px 9px 0px;
+    -fx-border-width: 6px 6px 6px 0px;
     -fx-border-radius: 0 12px 12px 0;
     -fx-background-radius: 0 3px 3px 0;
-    -fx-background-insets: 9px 9px 9px 0px;
+    -fx-background-insets: 6px 6px 6px 0px;
 }
 
 .holdPanel, .previewPanel{
-    -fx-border-color: #2A5058;
+    -fx-border-color: #00E5FF;
     -fx-background-color: #111111;
+}
+
+.nextBrickLabel, .scoreClass {
+    -fx-effect: dropshadow(gaussian, rgba(0,229,255,0.6), 8, 0.3, 0, 0);
 }

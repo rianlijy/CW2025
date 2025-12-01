@@ -56,7 +56,7 @@
                   prefWidth="120"
                   styleClass="previewPanel">
             </VBox>
-            <Region prefHeight="237"/>
+            <Region prefHeight="242"/>
         </VBox>
     </HBox>
     <Group fx:id="groupNotification"
