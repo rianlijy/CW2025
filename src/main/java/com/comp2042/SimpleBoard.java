@@ -221,16 +221,26 @@ public class SimpleBoard implements Board {
             currentOffset = new Point(3, 0);
             // Note: don't call createNewBrick() here because we replaced the current brick
         }
-
-        // After holding/swap we should return the updated view
         return getViewData();
     }
     public int[][] getHeldMatrix() {
         if (heldBrick == null) {
-            // return an empty 4x4 (keeps UI code simple)
             return new int[4][4];
         }
-        // return the default orientation shape (copy defensively)
         return MatrixOperations.copy(heldBrick.getShapeMatrix().get(0));
+    }
+
+    public void addGarbageRow() {
+        for (int row = 0; row < width - 1; row++) {
+            currentGameMatrix[row] = currentGameMatrix[row + 1];
+        }
+        int[] garbageRow = new int[height];
+
+        int hole = (int)(Math.random() * height);
+
+        for (int col = 0; col < height; col++) {
+            garbageRow[col] = (col == hole) ? 0 : 8;
+        }
+        currentGameMatrix[width - 1] = garbageRow;
     }
 }

@@ -1,7 +1,9 @@
 package com.comp2042;
 
+import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -79,11 +81,15 @@ public class GuiController implements Initializable {
 
     private Timeline timeLine;
 
+    private Timeline flashTimeline;
+
     private final BooleanProperty isPause = new SimpleBooleanProperty();
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
     private GameController controller;
+
+    private Timeline garbageTimer;
 
     public void setController(GameController controller) {
         this.controller = controller;
@@ -178,6 +184,7 @@ public class GuiController implements Initializable {
         reflection.setFraction(0.8);
         reflection.setTopOpacity(0.9);
         reflection.setTopOffset(-12);
+        startGarbageTimer();
     }
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
@@ -289,7 +296,8 @@ public class GuiController implements Initializable {
             case 5 -> Color.web("#63FFA7"); // S
             case 6 -> Color.web("#FF4E3D"); // Z
             case 7 -> Color.web("#FF6BFA"); // T
-            default -> Color.BLACK;
+            case 8 -> Color.web("#777777");  // garbage
+            default -> Color.TRANSPARENT;
         };
     }
 
@@ -394,6 +402,14 @@ public class GuiController implements Initializable {
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
         pauseLabel.setVisible(false);
+        if (garbageTimer != null) {
+            garbageTimer.stop();
+        }
+        if (flashTimeline != null) {
+            flashTimeline.stop();
+            flashTimeline = null;
+        }
+        startGarbageTimer();
     }
 
     public void pauseGame(ActionEvent actionEvent) {
@@ -513,20 +529,108 @@ public class GuiController implements Initializable {
 
     private void togglePause() {
         if (isGameOver.get()) return;
+        boolean nowPaused = !isPause.get();
+        isPause.set(nowPaused);
 
-        boolean current = isPause.get();
-        isPause.set(!current);
-
-        if (isPause.get()) {
-            timeLine.pause();
+        if (nowPaused) {
+            if (timeLine != null) timeLine.pause();
+            if (garbageTimer != null) garbageTimer.pause();
+            if (flashTimeline != null) flashTimeline.pause();
             showPauseOverlay();
         } else {
             hidePauseOverlay();
-            timeLine.play();
+            if (garbageTimer != null) garbageTimer.play();
+            if (timeLine != null) timeLine.play();
+            if (flashTimeline != null) flashTimeline.play();
         }
-
         gamePanel.requestFocus();
     }
+
+    private void startGarbageWarning() {
+        if (isPause.get()) return;
+        flashIncomingGarbageRow(() -> {
+            ((SimpleBoard) controller.getBoard()).addGarbageRow();
+            Platform.runLater(() -> {
+                refreshGameBackground(controller.getBoard().getBoardMatrix());
+                forceRedrawBottomRow();
+            });
+            startGarbageTimer();
+        });
+    }
+
+    private void flashIncomingGarbageRow(Runnable onFinished) {
+
+        // Stop any previous flash
+        if (flashTimeline != null) {
+            flashTimeline.stop();
+        }
+
+        int TOTAL_ROWS = displayMatrix.length;
+        int VISIBLE_ROWS = gamePanel.getRowConstraints().size();
+        int bottomVisibleRow = VISIBLE_ROWS - 1 + 2;
+
+        Rectangle[] rowRects = displayMatrix[bottomVisibleRow];
+
+        flashTimeline = new Timeline();   // store reference
+        flashTimeline.setCycleCount(8);   // number of flashes * 2
+
+        // ON
+        flashTimeline.getKeyFrames().add(new KeyFrame(Duration.millis(300), e -> {
+            if (isPause.get()) return; // stop visual update during pause
+            for (Rectangle r : rowRects) {
+                r.setFill(Color.web("#999999"));
+                r.setOpacity(1.0);
+            }
+        }));
+
+        // OFF
+        flashTimeline.getKeyFrames().add(new KeyFrame(Duration.millis(600), e -> {
+            if (isPause.get()) return;
+            int[][] board = controller.getBoard().getBoardMatrix();
+            for (int col = 0; col < rowRects.length; col++) {
+                int cellValue = board[bottomVisibleRow][col];
+                setRectangleData(cellValue, rowRects[col]);
+            }
+        }));
+
+        flashTimeline.setOnFinished(ev -> {
+            if (!isPause.get()) {
+                onFinished.run();
+            }
+            flashTimeline = null; // clear after done
+        });
+
+        flashTimeline.play();
+    }
+
+    private void forceRedrawBottomRow() {
+        int[][] board = controller.getBoard().getBoardMatrix();
+        int TOTAL_ROWS = board.length;
+        int VISIBLE_ROWS = gamePanel.getRowConstraints().size();
+        int bottomVisibleRow = VISIBLE_ROWS - 1 + 2;
+
+        Rectangle[] rowRects = displayMatrix[bottomVisibleRow];
+
+        for (int col = 0; col < rowRects.length; col++) {
+            int value = board[bottomVisibleRow][col];
+            setRectangleData(value, rowRects[col]);
+            rowRects[col].setOpacity(1.0);
+            rowRects[col].setVisible(true);
+        }
+    }
+
+    private void startGarbageTimer() {
+        if (garbageTimer != null) {
+            garbageTimer.stop();
+        }
+        garbageTimer = new Timeline(new KeyFrame(
+                Duration.seconds(30),
+                e -> startGarbageWarning()
+        ));
+        garbageTimer.setCycleCount(Timeline.INDEFINITE);
+        garbageTimer.play();
+    }
+
 
     public void bindLevel(IntegerProperty levelProperty) {
         levelLabel.textProperty().bind(levelProperty.asString());

@@ -39,7 +39,7 @@
                    styleClass="scoreClass"
                    text="1"
                    alignment="CENTER"/>
-            <Region prefHeight="30"/>
+            <Region prefHeight="35"/>
         </VBox>
 
         <BorderPane fx:id="gameBoard"
@@ -63,7 +63,7 @@
                   prefWidth="120"
                   styleClass="previewPanel">
             </VBox>
-            <Region prefHeight="242"/>
+            <Region prefHeight="244"/>
         </VBox>
     </HBox>
     <Group fx:id="groupNotification"
