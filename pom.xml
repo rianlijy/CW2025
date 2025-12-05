@@ -51,7 +51,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
-                    <mainClass>com.comp2042.Main</mainClass>
+                    <mainClass>com.comp2042.controller.Main</mainClass>
                 </configuration>
             </plugin>
             <plugin>
@@ -71,7 +71,7 @@
                     <execution>
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.comp2042.Main</mainClass>
+                            <mainClass>com.comp2042.controller.Main</mainClass>
                             <jvmArgs>
                                 --add-modules javafx.controls,javafx.fxml,javafx.media
                             </jvmArgs>

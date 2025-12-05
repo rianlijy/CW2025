@@ -1,4 +1,4 @@
-package com.comp2042;
+package com.comp2042.controller;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

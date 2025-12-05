@@ -1,6 +1,9 @@
-package com.comp2042;
+package com.comp2042.controller;
 
-import javafx.animation.FadeTransition;
+import com.comp2042.game.*;
+import com.comp2042.ui.GameOverPanel;
+import com.comp2042.ui.NotificationPanel;
+import com.comp2042.ui.Sound;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -19,7 +22,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
