@@ -8,6 +8,8 @@ public class Sound {
     private MediaPlayer musicPlayer;
     private MediaPlayer placeSFX;
     private MediaPlayer warningSFX;
+    private boolean muted = false;
+    private double lastVolume = 0.5;
 
     public Sound() {
         musicPlayer = load("/sounds/bgm.mp3", true);
@@ -45,5 +47,33 @@ public class Sound {
     public void playWarning() {
         warningSFX.stop();
         warningSFX.play();
+    }
+
+    public void setVolume(double v) {
+        if (!muted) {
+            lastVolume = v;
+            musicPlayer.setVolume(v * 0.6);
+            placeSFX.setVolume(Math.min(1.0, v * 1.5));
+            warningSFX.setVolume(v * 0.8);
+        }
+    }
+    public void toggleMute() {
+        if (!muted) {
+            muted = true;
+            musicPlayer.setVolume(0);
+            placeSFX.setVolume(0);
+            warningSFX.setVolume(0);
+        } else {
+            muted = false;
+            setVolume(lastVolume);
+        }
+    }
+
+    public boolean isMuted() {
+        return muted;
+    }
+
+    public double getLastVolume() {
+        return lastVolume;
     }
 }

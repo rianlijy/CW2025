@@ -6,6 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <?import java.net.URL?>
+<?import javafx.scene.control.Slider?>
 <StackPane fx:controller="com.comp2042.GuiController"
            xmlns:fx="http://javafx.com/fxml"
            alignment="CENTER">
@@ -63,7 +64,19 @@
                   prefWidth="120"
                   styleClass="previewPanel">
             </VBox>
-            <Region prefHeight="244"/>
+            <Region prefHeight="123"/>
+            <Label text="VOLUME"
+                   styleClass="nextBrickLabel"
+                   alignment="CENTER"/>
+            <Slider fx:id="volumeSlider"
+                    min="0"
+                    max="1"
+                    value="0.5"
+                    prefWidth="110"
+                    majorTickUnit="0.5"
+                    minorTickCount="4"
+                    blockIncrement="0.1" />
+            <Region prefHeight="55"/>
         </VBox>
     </HBox>
     <Group fx:id="groupNotification"

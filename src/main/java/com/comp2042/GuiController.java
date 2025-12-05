@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.control.Slider;
 import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -60,6 +61,8 @@ public class GuiController implements Initializable {
 
     @FXML
     private Label pauseLabel;
+
+    @FXML private Slider volumeSlider;
 
     private GridPane holdGrid;
     private Rectangle[][] holdRects;
@@ -173,6 +176,16 @@ public class GuiController implements Initializable {
                     togglePause();
                     keyEvent.consume();
                 }
+                if (keyEvent.getCode() == KeyCode.M) {
+                    sound.toggleMute();
+
+                    if (sound.isMuted()) {
+                        volumeSlider.setValue(0);
+                    } else {
+                        volumeSlider.setValue(sound.getLastVolume());
+                    }
+                    keyEvent.consume();
+                }
                 if (keyEvent.getCode() == KeyCode.N) {
                     newGame(null);
                 }
@@ -190,6 +203,15 @@ public class GuiController implements Initializable {
         reflection.setTopOffset(-12);
         sound = new Sound();
         sound.startMusic();
+        volumeSlider.setFocusTraversable(false);
+        volumeSlider.valueProperty().addListener((obs, oldV, newV) -> {
+            double v = newV.doubleValue();
+            if (v > 0 && sound.isMuted()) {
+                sound.toggleMute();
+            }
+            sound.setVolume(v);
+            Platform.runLater(() -> gamePanel.requestFocus());
+        });
         startGarbageTimer();
     }
 
@@ -644,5 +666,9 @@ public class GuiController implements Initializable {
 
     private void hidePauseOverlay() {
         pauseLabel.setVisible(false);
+    }
+    
+    public Sound getSound() {
+        return sound;
     }
 }
