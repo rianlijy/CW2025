@@ -91,11 +91,14 @@ public class GuiController implements Initializable {
 
     private Timeline garbageTimer;
 
+    private Sound sound;
+
+
     public void setController(GameController controller) {
         this.controller = controller;
         controller.getBoard().getScore().levelProperty().addListener((obs, oldV, newV) -> {
             int level = newV.intValue();
-            double newSpeed = Math.max(200, 600 - (level - 1) * 100);  // caps at 100ms
+            double newSpeed = Math.max(200, 600 - (level - 1) * 100);
 
             timeLine.stop();
             timeLine.getKeyFrames().setAll(new KeyFrame(
@@ -146,6 +149,7 @@ public class GuiController implements Initializable {
                         spacePressed = true;
 
                         DownData data = controller.hardDrop();
+                        sound.playPlace();
                         refreshBrick(data.getViewData());
                         if (data.getClearRow() != null && data.getClearRow().getLinesRemoved() > 0) {
                             int baseBonus = data.getClearRow().getScoreBonus();
@@ -184,6 +188,8 @@ public class GuiController implements Initializable {
         reflection.setFraction(0.8);
         reflection.setTopOpacity(0.9);
         reflection.setTopOffset(-12);
+        sound = new Sound();
+        sound.startMusic();
         startGarbageTimer();
     }
 
@@ -365,6 +371,9 @@ public class GuiController implements Initializable {
     private void moveDown(MoveEvent event) {
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onDownEvent(event);
+            if (downData.isLocked()) {
+                sound.playPlace();
+            }
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
                 int baseBonus = downData.getClearRow().getScoreBonus();
                 int level = controller.getBoard().getScore().getLevel();
@@ -559,31 +568,24 @@ public class GuiController implements Initializable {
     }
 
     private void flashIncomingGarbageRow(Runnable onFinished) {
-
-        // Stop any previous flash
         if (flashTimeline != null) {
             flashTimeline.stop();
         }
-
         int TOTAL_ROWS = displayMatrix.length;
         int VISIBLE_ROWS = gamePanel.getRowConstraints().size();
         int bottomVisibleRow = VISIBLE_ROWS - 1 + 2;
-
         Rectangle[] rowRects = displayMatrix[bottomVisibleRow];
-
-        flashTimeline = new Timeline();   // store reference
-        flashTimeline.setCycleCount(8);   // number of flashes * 2
-
-        // ON
+        flashTimeline = new Timeline();
+        flashTimeline.setCycleCount(8);
         flashTimeline.getKeyFrames().add(new KeyFrame(Duration.millis(300), e -> {
-            if (isPause.get()) return; // stop visual update during pause
+            if (isPause.get()) return;
+            sound.playWarning();
             for (Rectangle r : rowRects) {
                 r.setFill(Color.web("#999999"));
                 r.setOpacity(1.0);
             }
         }));
 
-        // OFF
         flashTimeline.getKeyFrames().add(new KeyFrame(Duration.millis(600), e -> {
             if (isPause.get()) return;
             int[][] board = controller.getBoard().getBoardMatrix();
@@ -597,7 +599,7 @@ public class GuiController implements Initializable {
             if (!isPause.get()) {
                 onFinished.run();
             }
-            flashTimeline = null; // clear after done
+            flashTimeline = null;
         });
 
         flashTimeline.play();

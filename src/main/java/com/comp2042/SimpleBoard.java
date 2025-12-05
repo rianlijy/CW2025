@@ -38,7 +38,7 @@ public class SimpleBoard implements Board {
 
     public List<int[][]> getNextFiveMatrices() {
         return nextFive.stream()
-                .map(b -> b.getShapeMatrix().get(0)) // use default orientation
+                .map(b -> b.getShapeMatrix().get(0))
                 .map(MatrixOperations::copy)
                 .collect(Collectors.toList());
     }
@@ -107,7 +107,6 @@ public class SimpleBoard implements Board {
             boolean conflict =
                     MatrixOperations.intersect(currentMatrix, rotated, newX, newY);
             if (!conflict) {
-                // apply successful rotation + offset
                 brickRotator.setCurrentShape(nextShape.getPosition());
                 currentOffset.move(newX, newY);
                 return true;
@@ -118,9 +117,7 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean createNewBrick() {
-        // consume next from queue
         com.comp2042.logic.bricks.Brick currentBrick = nextFive.poll();
-        // refill queue
         nextFive.add(brickGenerator.getBrick());
 
         brickRotator.setBrick(currentBrick);
@@ -209,17 +206,13 @@ public class SimpleBoard implements Board {
         }
 
         if (heldBrick == null) {
-            // store current and spawn next
             heldBrick = current;
-            // spawn new brick from queue
             createNewBrick();
         } else {
-            // swap current and held
             com.comp2042.logic.bricks.Brick tmp = heldBrick;
             heldBrick = current;
             brickRotator.setBrick(tmp);
             currentOffset = new Point(3, 0);
-            // Note: don't call createNewBrick() here because we replaced the current brick
         }
         return getViewData();
     }

@@ -35,14 +35,14 @@ public class GameController implements InputEventListener {
             }
             viewGuiController.refreshGameBackground(board.getBoardMatrix());
             viewGuiController.updatePreview(board.getViewData());
+            return new DownData(clearRow, board.getViewData(), true);
         }
-
         else {
             if (event.getEventSource() == EventSource.USER) {
                 board.getScore().add(1);
             }
+            return new DownData(null, board.getViewData(), false);
         }
-        return new DownData(clearRow, board.getViewData());
     }
 
     public DownData hardDrop() {
@@ -68,7 +68,7 @@ public class GameController implements InputEventListener {
         }
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
         viewGuiController.updatePreview(board.getViewData());
-        return new DownData(clearRow, board.getViewData());
+        return new DownData(clearRow, board.getViewData(), false);
     }
 
     @Override
