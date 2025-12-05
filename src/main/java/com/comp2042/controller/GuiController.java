@@ -1,9 +1,7 @@
 package com.comp2042.controller;
 
 import com.comp2042.game.*;
-import com.comp2042.ui.GameOverPanel;
-import com.comp2042.ui.NotificationPanel;
-import com.comp2042.ui.Sound;
+import com.comp2042.ui.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -66,16 +64,6 @@ public class GuiController implements Initializable {
 
     @FXML private Slider volumeSlider;
 
-    private GridPane holdGrid;
-    private Rectangle[][] holdRects;
-    private static final int HOLD_CELL = 12;
-
-    private final List<GridPane> previewGrids = new ArrayList<>();
-
-    private final List<Rectangle[][]> previewRectangles = new ArrayList<>();
-
-    private static final int PREVIEW_CELL = 12;
-
     private Rectangle[][] displayMatrix;
 
     private InputEventListener eventListener;
@@ -97,6 +85,12 @@ public class GuiController implements Initializable {
     private Timeline garbageTimer;
 
     private Sound sound;
+
+    private PreviewRenderer previewRenderer;
+
+    private HoldRenderer holdRenderer;
+
+    private BoardRenderer boardRenderer;
 
 
     public void setController(GameController controller) {
@@ -170,7 +164,7 @@ public class GuiController implements Initializable {
                     if (keyEvent.getCode() == KeyCode.SHIFT || keyEvent.getCode() == KeyCode.C) {
                         ViewData data = controller.hold();
                         refreshBrick(data);
-                        updateHold(data);
+                        holdRenderer.updateHold(data);
                         keyEvent.consume();
                     }
                 }
@@ -219,94 +213,36 @@ public class GuiController implements Initializable {
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         final int TOTAL_ROWS = boardMatrix.length;
-        final int VISIBLE_ROWS = TOTAL_ROWS - 2;
         final int TOTAL_COLS = boardMatrix[0].length;
-        gamePanel.getColumnConstraints().clear();
-        for (int c = 0; c < TOTAL_COLS; c++) {
-            javafx.scene.layout.ColumnConstraints cc = new javafx.scene.layout.ColumnConstraints();
-            cc.setMinWidth(BRICK_SIZE);
-            cc.setPrefWidth(BRICK_SIZE);
-            cc.setMaxWidth(BRICK_SIZE);
-            cc.setHgrow(javafx.scene.layout.Priority.NEVER);
-            gamePanel.getColumnConstraints().add(cc);
-        }
-        gamePanel.getRowConstraints().clear();
-        for (int r = 0; r < VISIBLE_ROWS; r++) {
-            javafx.scene.layout.RowConstraints rc = new javafx.scene.layout.RowConstraints();
-            rc.setMinHeight(BRICK_SIZE);
-            rc.setPrefHeight(BRICK_SIZE);
-            rc.setMaxHeight(BRICK_SIZE);
-            rc.setVgrow(javafx.scene.layout.Priority.NEVER);
-            gamePanel.getRowConstraints().add(rc);
-        }
-        double prefW = TOTAL_COLS * BRICK_SIZE + Math.max(0, TOTAL_COLS - 1) * gamePanel.getHgap();
-        double prefH = VISIBLE_ROWS * BRICK_SIZE + Math.max(0, VISIBLE_ROWS - 1) * gamePanel.getVgap();
-        gamePanel.setPrefWidth(prefW);
-        gamePanel.setPrefHeight(prefH);
 
         displayMatrix = new Rectangle[TOTAL_ROWS][TOTAL_COLS];
-        for (int i = 2; i < TOTAL_ROWS; i++) {
-            for (int j = 0; j < TOTAL_COLS; j++) {
-                Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
-                rectangle.getStyleClass().add("gameCell");
-                rectangle.setArcWidth(0);
-                rectangle.setArcHeight(0);
-                displayMatrix[i][j] = rectangle;
-                int gridRow = i - 2;
-                gamePanel.add(rectangle, j, gridRow);
-            }
-        }
         int[][] brickData = brick.getBrickData();
         rectangles = new Rectangle[brickData.length][brickData[0].length];
         for (int i = 0; i < brickData.length; i++) {
-            for (int j = 0; j < brickData[i].length; j++) {
-                Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
-                rectangle.setArcWidth(0);
-                rectangle.setArcHeight(0);
-                rectangles[i][j] = rectangle;
-                setRectangleData(brickData[i][j], rectangle);
-                rectangle.setVisible(false);
-
-                int col = brick.getxPosition() + j;
-                int row = brick.getyPosition() + i - 2;
-                int addRow = Math.max(0, row);
-                if (col >= 0 && col < TOTAL_COLS && addRow >= 0 && addRow < VISIBLE_ROWS) {
-                    gamePanel.add(rectangle, col, addRow);
-                } else {
-                    int addCol = Math.max(0, Math.min(col, TOTAL_COLS - 1));
-                    int addRowSafe = Math.max(0, Math.min(addRow, Math.max(0, VISIBLE_ROWS - 1)));
-                    gamePanel.add(rectangle, addCol, addRowSafe);
-                }
+            for (int j = 0; j < brickData[0].length; j++) {
+                rectangles[i][j] = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                rectangles[i][j].getStyleClass().add("gameCell");
             }
         }
 
         int[][] ghostData = brick.getGhostBrick();
         ghostRectangles = new Rectangle[ghostData.length][ghostData[0].length];
+
         for (int i = 0; i < ghostData.length; i++) {
             for (int j = 0; j < ghostData[i].length; j++) {
-                Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
-                rectangle.setFill(Color.TRANSPARENT);
-                rectangle.setStroke(Color.WHITE);
-                rectangle.setStrokeWidth(1);
-                rectangle.setArcWidth(0);
-                rectangle.setArcHeight(0);
-                rectangle.setVisible(false);
-                ghostRectangles[i][j] = rectangle;
-
-                int col = brick.getGhostX() + j;
-                int row = brick.getGhostY() + i - 2;
-                int addRow = Math.max(0, row);
-                if (col >= 0 && col < TOTAL_COLS && addRow >= 0 && addRow < VISIBLE_ROWS) {
-                    gamePanel.add(rectangle, col, addRow);
-                } else {
-                    int addCol = Math.max(0, Math.min(col, TOTAL_COLS - 1));
-                    int addRowSafe = Math.max(0, Math.min(addRow, Math.max(0, VISIBLE_ROWS - 1)));
-                    gamePanel.add(rectangle, addCol, addRowSafe);
-                }
+                Rectangle rect = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                rect.setStroke(Color.WHITE);
+                rect.setFill(Color.TRANSPARENT);
+                rect.setVisible(false);
+                ghostRectangles[i][j] = rect;
             }
         }
-        initializePreviewPanels();
-        initializeHoldPanel();
+
+        boardRenderer = new BoardRenderer(gamePanel);
+        boardRenderer.initBoard(boardMatrix, brick, displayMatrix, rectangles, ghostRectangles);
+
+        previewRenderer = new PreviewRenderer(previewBox);
+        holdRenderer = new HoldRenderer(leftDummy);
 
         timeLine = new Timeline(new KeyFrame(
                 Duration.millis(600),
@@ -314,84 +250,20 @@ public class GuiController implements Initializable {
         ));
         timeLine.setCycleCount(Timeline.INDEFINITE);
         timeLine.play();
+
         refreshBrick(brick);
     }
 
-    private Paint getFillColor(int i) {
-        return switch (i) {
-            case 1 -> Color.web("#00AFFF"); // I
-            case 2 -> Color.web("#B044FF"); // J
-            case 3 -> Color.web("#FF2DAE"); // L
-            case 4 -> Color.web("#FFF65B"); // O
-            case 5 -> Color.web("#63FFA7"); // S
-            case 6 -> Color.web("#FF4E3D"); // Z
-            case 7 -> Color.web("#FF6BFA"); // T
-            case 8 -> Color.web("#777777");  // garbage
-            default -> Color.TRANSPARENT;
-        };
-    }
+
 
     private void refreshBrick(ViewData brick) {
-        final int VISIBLE_ROWS = gamePanel.getRowConstraints().size();
-        final int TOTAL_COLS = gamePanel.getColumnConstraints().size();
-
-        int[][] ghostData = brick.getGhostBrick();
-        for (int i = 0; i < ghostRectangles.length; i++) {
-            for (int j = 0; j < ghostRectangles[i].length; j++) {
-                Rectangle r = ghostRectangles[i][j];
-                boolean cellHasGhost = ghostData[i][j] != 0;
-
-                int newCol = brick.getGhostX() + j;
-                int newRow = brick.getGhostY() + i - 2;
-                int clampedRow = Math.max(0, newRow);
-                int clampedCol = Math.max(0, Math.min(newCol, TOTAL_COLS - 1));
-                GridPane.setColumnIndex(r, clampedCol);
-                GridPane.setRowIndex(r, Math.min(clampedRow, Math.max(0, VISIBLE_ROWS - 1)));
-                r.setVisible(cellHasGhost && newRow >= 0);
-            }
-        }
-
-        if (isPause.getValue() == Boolean.FALSE) {
-            int[][] bData = brick.getBrickData();
-            for (int i = 0; i < bData.length; i++) {
-                for (int j = 0; j < bData[i].length; j++) {
-                    Rectangle r = rectangles[i][j];
-
-                    int newCol = brick.getxPosition() + j;
-                    int newRow = brick.getyPosition() + i - 2;
-                    int clampedRow = Math.max(0, newRow);
-                    int clampedCol = Math.max(0, Math.min(newCol, TOTAL_COLS - 1));
-                    setRectangleData(bData[i][j], r);
-                    GridPane.setColumnIndex(r, clampedCol);
-                    GridPane.setRowIndex(r, Math.min(clampedRow, Math.max(0, VISIBLE_ROWS - 1)));
-                    r.setVisible(bData[i][j] != 0 && newRow >= 0);
-                }
-            }
-        }
+        boardRenderer.refreshBrick(brick);
     }
 
     public void refreshGameBackground(int[][] board) {
-        for (int i = 2; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                setRectangleData(board[i][j], displayMatrix[i][j]);
-            }
-        }
+        boardRenderer.refreshGameBackground(board);
     }
 
-    private void setRectangleData(int color, Rectangle rectangle) {
-        if (color == 0) {
-            rectangle.getStyleClass().setAll("gameCell");
-            rectangle.setFill(Color.TRANSPARENT);
-        } else {
-            if (!rectangle.getStyleClass().contains("gameCell")) {
-                rectangle.getStyleClass().add("gameCell");
-            }
-            rectangle.setFill(getFillColor(color));
-        }
-
-        rectangle.setArcHeight(0);
-        rectangle.setArcWidth(0);
-    }
     private void moveDown(MoveEvent event) {
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onDownEvent(event);
@@ -429,7 +301,7 @@ public class GuiController implements Initializable {
         timeLine.stop();
         gameOverPanel.setVisible(false);
         eventListener.createNewGame();
-        updateHold(new ViewData(new int[0][0], 0, 0, null, new int[0][0], 0, 0, new int[4][4]));
+        holdRenderer.updateHold(new ViewData(new int[0][0], 0, 0, null, new int[0][0], 0, 0, new int[4][4]));
         gamePanel.requestFocus();
         timeLine.play();
         isPause.setValue(Boolean.FALSE);
@@ -447,117 +319,6 @@ public class GuiController implements Initializable {
 
     public void pauseGame(ActionEvent actionEvent) {
         gamePanel.requestFocus();
-    }
-
-    private void initializePreviewPanels() {
-        previewBox.getChildren().removeIf(node -> node instanceof GridPane);
-        previewGrids.clear();
-        previewRectangles.clear();
-
-        for (int i = 0; i < 5; i++) {
-            GridPane mini = new GridPane();
-            mini.setHgap(1);
-            mini.setVgap(1);
-            mini.setAlignment(Pos.CENTER);
-
-            Rectangle[][] rects = new Rectangle[4][4];
-
-            for (int r = 0; r < 4; r++) {
-                for (int c = 0; c < 4; c++) {
-                    Rectangle rect = new Rectangle(PREVIEW_CELL, PREVIEW_CELL);
-                    rect.setFill(Color.TRANSPARENT);
-                    rect.setVisible(false);
-                    mini.add(rect, c, r);
-                    rects[r][c] = rect;
-                }
-            }
-
-            previewBox.getChildren().add(mini);
-            previewGrids.add(mini);
-            previewRectangles.add(rects);
-        }
-    }
-
-
-    public void updatePreview(ViewData view) {
-        List<int[][]> nextFive = view.getNextFive();
-
-        for (int idx = 0; idx < previewRectangles.size(); idx++) {
-            Rectangle[][] rects = previewRectangles.get(idx);
-            int[][] mat = nextFive.get(idx);
-            int[] b = getBounds(mat);
-
-            for (int r = 0; r < 4; r++) {
-                for (int c = 0; c < 4; c++) {
-                    Rectangle rect = rects[r][c];
-
-                    if (r < b[0] || r > b[1] || c < b[2] || c > b[3] || mat[r][c] == 0) {
-                        rect.setVisible(false);
-                    } else {
-                        rect.setFill(getFillColor(mat[r][c]));
-                        rect.setVisible(true);
-                    }
-                }
-            }
-        }
-    }
-
-    private void initializeHoldPanel() {
-        holdGrid = new GridPane();
-        holdGrid.setHgap(1);
-        holdGrid.setVgap(1);
-        holdGrid.setAlignment(Pos.CENTER);
-
-        holdRects = new Rectangle[4][4];
-
-        for (int r = 0; r < 4; r++) {
-            for (int c = 0; c < 4; c++) {
-                Rectangle rect = new Rectangle(HOLD_CELL, HOLD_CELL);
-                rect.setFill(Color.TRANSPARENT);
-                rect.setVisible(false);
-                holdGrid.add(rect, c, r);
-                holdRects[r][c] = rect;
-            }
-        }
-
-        leftDummy.getChildren().add(holdGrid);
-
-    }
-
-    public void updateHold(ViewData view) {
-        int[][] mat = view.getHeldBrick();
-        int[] b = getBounds(mat);
-
-        for (int r = 0; r < 4; r++) {
-            for (int c = 0; c < 4; c++) {
-                Rectangle rect = holdRects[r][c];
-
-                if (r < b[0] || r > b[1] || c < b[2] || c > b[3] || mat[r][c] == 0) {
-                    rect.setVisible(false);
-                } else {
-                    rect.setFill(getFillColor(mat[r][c]));
-                    rect.setVisible(true);
-                }
-            }
-        }
-    }
-
-
-    private int[] getBounds(int[][] mat) {
-        int minR = 4, maxR = -1;
-        int minC = 4, maxC = -1;
-
-        for (int r = 0; r < 4; r++) {
-            for (int c = 0; c < 4; c++) {
-                if (mat[r][c] != 0) {
-                    if (r < minR) minR = r;
-                    if (r > maxR) maxR = r;
-                    if (c < minC) minC = c;
-                    if (c > maxC) maxC = c;
-                }
-            }
-        }
-        return new int[]{minR, maxR, minC, maxC};
     }
 
     private void togglePause() {
@@ -615,7 +376,7 @@ public class GuiController implements Initializable {
             int[][] board = controller.getBoard().getBoardMatrix();
             for (int col = 0; col < rowRects.length; col++) {
                 int cellValue = board[bottomVisibleRow][col];
-                setRectangleData(cellValue, rowRects[col]);
+                rowRects[col].setFill(ColorUtil.getFillColor(cellValue));
             }
         }));
 
@@ -639,7 +400,9 @@ public class GuiController implements Initializable {
 
         for (int col = 0; col < rowRects.length; col++) {
             int value = board[bottomVisibleRow][col];
-            setRectangleData(value, rowRects[col]);
+            rowRects[col].setFill(ColorUtil.getFillColor(value));
+            rowRects[col].setArcWidth(0);
+            rowRects[col].setArcHeight(0);
             rowRects[col].setOpacity(1.0);
             rowRects[col].setVisible(true);
         }
@@ -669,8 +432,17 @@ public class GuiController implements Initializable {
     private void hidePauseOverlay() {
         pauseLabel.setVisible(false);
     }
-    
+
     public Sound getSound() {
         return sound;
     }
+
+    public void updatePreview(ViewData data) {
+        previewRenderer.updatePreview(data);
+    }
+
+    public void updateHold(ViewData data) {
+        holdRenderer.updateHold(data);
+    }
+
 }
