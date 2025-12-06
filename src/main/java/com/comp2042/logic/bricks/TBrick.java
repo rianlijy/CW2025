@@ -5,6 +5,9 @@ import com.comp2042.game.MatrixOperations;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents the T-shaped Tetris piece.
+ */
 final class TBrick implements Brick {
 
     private final List<int[][]> brickMatrix = new ArrayList<>();

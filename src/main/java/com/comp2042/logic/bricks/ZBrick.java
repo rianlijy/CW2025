@@ -5,6 +5,9 @@ import com.comp2042.game.MatrixOperations;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents the Z-shaped Tetris piece.
+ */
 final class ZBrick implements Brick {
 
     private final List<int[][]> brickMatrix = new ArrayList<>();

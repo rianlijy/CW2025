@@ -1,5 +1,10 @@
 package com.comp2042.game;
 
+/**
+ * Result of clearing completed rows from the game board.
+ * Store information about how many rows were cleared, updated board matrix,
+ * and score bonus awarded for the clear.
+ */
 public final class ClearRow {
 
     private final int linesRemoved;

@@ -10,6 +10,10 @@ import javafx.scene.shape.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Renders the preview of the next five Tetris pieces that will appear.
+ * Displays mini representations of upcoming bricks in a vertical layout.
+ */
 public class PreviewRenderer {
 
     private final VBox previewBox;
@@ -22,6 +26,9 @@ public class PreviewRenderer {
         initializePreviewPanels();
     }
 
+    /**
+     * Initializes five preview panels, each with a 4x4 grid of transparent rectangles.
+     */
     private void initializePreviewPanels() {
         previewBox.getChildren().removeIf(node -> node instanceof GridPane);
         previewGrids.clear();
@@ -51,6 +58,10 @@ public class PreviewRenderer {
         }
     }
 
+    /**
+     * Calculates the bounding box of non-zero cells in the matrix.
+     * Returns [minRow, maxRow, minCol, maxCol].
+     */
     private int[] getBounds(int[][] mat) {
         int minR = 4, maxR = -1;
         int minC = 4, maxC = -1;
@@ -67,6 +78,10 @@ public class PreviewRenderer {
         return new int[]{minR, maxR, minC, maxC};
     }
 
+    /**
+     * Updates the preview display with the next five pieces, showing only
+     * visible cells within each piece's bounding box.
+     */
     public void updatePreview(ViewData view) {
         var nextFive = view.getNextFive();
 

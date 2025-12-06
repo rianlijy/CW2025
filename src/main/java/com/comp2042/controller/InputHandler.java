@@ -7,6 +7,11 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 
+/**
+ * Handles keyboard input for the game.
+ * Maps keyboard keys to game actions (movement, rotation, hold, pause, etc.)
+ * and forwards events to the GUI controller.
+ */
 public class InputHandler {
 
     private final GuiController gui;
@@ -26,6 +31,10 @@ public class InputHandler {
         });
     }
 
+    /**
+     * Maps keyboard input to game actions. Supports arrow keys/WASD for movement,
+     * space for hard drop, shift/C for hold, P/ESC for pause, M for mute, N for new game.
+     */
     private void handleKeyPressed(KeyEvent keyEvent) {
 
         if (!gui.isPause() && !gui.isGameOver()) {

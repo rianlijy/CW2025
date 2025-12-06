@@ -14,6 +14,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
+/**
+ * A panel that displays temporary notifications with animation.
+ * Shows text with a glow effect and animation.
+ */
 public class NotificationPanel extends BorderPane {
 
     public NotificationPanel(String text) {
@@ -28,6 +32,9 @@ public class NotificationPanel extends BorderPane {
 
     }
 
+    /**
+     * Animates the notification upward, then removes it from the list.
+     */
     public void showScore(ObservableList<Node> list) {
         FadeTransition ft = new FadeTransition(Duration.millis(2000), this);
         TranslateTransition tt = new TranslateTransition(Duration.millis(2500), this);

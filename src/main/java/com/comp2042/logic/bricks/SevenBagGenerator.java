@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Generates Tetris bricks using the "7-bag" algorithm.
+ * Ensures that all 7 piece types appear before any piece type repeats,
+ * to provide a more balanced distribution
+ */
 public class SevenBagGenerator implements BrickGenerator {
     private final List<Brick> bag = new ArrayList<>();
     private Brick nextBrick;

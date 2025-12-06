@@ -2,6 +2,10 @@ package com.comp2042.game;
 
 import com.comp2042.logic.bricks.Brick;
 
+/**
+ * Manage the rotation state of the current Tetris brick.
+ * Tracks which rotation state is active and provides methods to get the next rotation.
+ */
 public class BrickRotator {
 
     private Brick brick;

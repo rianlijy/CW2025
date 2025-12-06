@@ -7,6 +7,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+/**
+ * Renders the held Tetris piece that the player can swap with the current piece.
+ * Displays a mini representation of the currently held brick.
+ */
 public class HoldRenderer {
 
     private final VBox leftDummy;
@@ -21,6 +25,9 @@ public class HoldRenderer {
         initializeHoldPanel();
     }
 
+    /**
+     * Initializes a 4x4 grid of transparent rectangles for displaying the held piece.
+     */
     private void initializeHoldPanel() {
         holdGrid = new GridPane();
         holdGrid.setHgap(1);
@@ -42,6 +49,10 @@ public class HoldRenderer {
         leftDummy.getChildren().add(holdGrid);
     }
 
+    /**
+     * Updates the hold display with the current held piece, showing only
+     * visible cells within the piece's bounding box.
+     */
     public void updateHold(ViewData view) {
         int[][] mat = view.getHeldBrick();
         int[] b = getBounds(mat);
@@ -59,6 +70,10 @@ public class HoldRenderer {
             }
     }
 
+    /**
+     * Calculates the bounding box of non-zero cells in the matrix.
+     * Returns [minRow, maxRow, minCol, maxCol].
+     */
     private int[] getBounds(int[][] mat) {
         int minR = 4, maxR = -1;
         int minC = 4, maxC = -1;

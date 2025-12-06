@@ -6,11 +6,20 @@ import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Utility class providing static methods for matrix operations used in Tetris.
+ * Handles operations such as collision detection, merging, copying, and row clearing.
+ * This class cannot be instantiated.
+ */
 public class MatrixOperations {
     //We don't want to instantiate this utility class
     private MatrixOperations(){
     }
 
+    /**
+     * Checks if a brick would collide with the board at the given position.
+     * Returns true if any non-zero brick cell overlaps with board boundaries or occupied cells.
+     */
     public static boolean intersect(final int[][] matrix, final int[][] brick, int x, int y) {
         for (int i = 0; i < brick.length; i++) {
             for (int j = 0; j < brick[i].length; j++) {
@@ -43,6 +52,10 @@ public class MatrixOperations {
         return myInt;
     }
 
+    /**
+     * Merges a brick into the board matrix at the specified position.
+     * Returns a new matrix with the brick overlaid, preserving existing board state.
+     */
     public static int[][] merge(int[][] filledFields, int[][] brick, int x, int y) {
         int[][] copy = copy(filledFields);
         for (int i = 0; i < brick.length; i++) {
@@ -57,6 +70,10 @@ public class MatrixOperations {
         return copy;
     }
 
+    /**
+     * Checks for completed rows, removes them, and returns updated matrix with score bonus.
+     * Applies gravity by shifting remaining rows down. Score: 1=100, 2=300, 3=500, 4=800.
+     */
     public static ClearRow checkRemoving(final int[][] matrix) {
         int[][] tmp = new int[matrix.length][matrix[0].length];
         Deque<int[]> newRows = new ArrayDeque<>();

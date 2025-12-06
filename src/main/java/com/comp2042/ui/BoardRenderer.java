@@ -4,6 +4,11 @@ import com.comp2042.game.ViewData;
 import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Rectangle;
 
+/**
+ * Renders the main game board, including the background grid, current piece,
+ * and ghost piece (preview of where the piece will land).
+ * Manages the visual representation of the Tetris game board.
+ */
 public class BoardRenderer {
 
     private static final int BRICK_SIZE = 20;
@@ -18,6 +23,10 @@ public class BoardRenderer {
         this.gamePanel = gamePanel;
     }
 
+    /**
+     * Initializes the board rendering system with GridPane layout, background cells,
+     * current piece, and ghost piece rectangles.
+     */
     public void initBoard(int[][] boardMatrix, ViewData brick,
                           Rectangle[][] displayMatrixTarget,
                           Rectangle[][] rectanglesTarget,
@@ -105,6 +114,9 @@ public class BoardRenderer {
         }
     }
 
+    /**
+     * Updates the visual position and visibility of the current piece and ghost piece.
+     */
     public void refreshBrick(ViewData brick) {
         final int VISIBLE_ROWS = gamePanel.getRowConstraints().size();
         final int TOTAL_COLS = gamePanel.getColumnConstraints().size();

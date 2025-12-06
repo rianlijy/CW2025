@@ -27,6 +27,11 @@ import javafx.scene.control.Label;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Main GUI controller for the Tetris game.
+ * Manages the JavaFX UI components, handles rendering, input, animations, and game state display.
+ * Implements both Initializable for FXML loading and GameListener for game state updates.
+ */
 public class GuiController implements Initializable, GameListener {
 
     private static final int BRICK_SIZE = 20;
@@ -106,6 +111,9 @@ public class GuiController implements Initializable, GameListener {
     @Override
     public void onBoardChanged(int[][] boardMatrix) { refreshGameBackground(boardMatrix); }
 
+    /**
+     * Initializes UI components, loads fonts, sets up input handlers, and configures audio.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
@@ -139,6 +147,10 @@ public class GuiController implements Initializable, GameListener {
         });
     }
 
+    /**
+     * Initializes all renderers, creates rectangle arrays for board/piece/ghost,
+     * and starts the game loop timeline (600ms interval).
+     */
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         final int TOTAL_ROWS = boardMatrix.length;
         final int TOTAL_COLS = boardMatrix[0].length;
@@ -192,6 +204,10 @@ public class GuiController implements Initializable, GameListener {
         boardRenderer.refreshGameBackground(board);
     }
 
+    /**
+     * Handles automatic piece movement, plays sounds, shows score notifications,
+     * and updates the display. Only processes if game is not paused.
+     */
     private void moveDown(MoveEvent event) {
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onDownEvent(event);
@@ -225,6 +241,9 @@ public class GuiController implements Initializable, GameListener {
         isGameOver.setValue(Boolean.TRUE);
     }
 
+    /**
+     * Resets game state, hides overlays, restarts timeline, and resets hold display.
+     */
     public void newGame(ActionEvent actionEvent) {
         timeLine.stop();
         gameOverPanel.setVisible(false);
@@ -237,6 +256,10 @@ public class GuiController implements Initializable, GameListener {
         pauseLabel.setVisible(false);
     }
 
+    /**
+     * Toggles pause state, pausing/resuming the timeline and showing/hiding pause overlay.
+     * Notifies game controller of state change.
+     */
     private void togglePause() {
         if (isGameOver.get()) return;
         boolean nowPaused = !isPause.get();

@@ -9,6 +9,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
+/**
+ * Manages the periodic addition of garbage rows to the game board.
+ * Displays a warning animation before adding a garbage row with a random hole.
+ */
 public class GarbageRow {
 
     private final GuiController gui;
@@ -63,6 +67,10 @@ public class GarbageRow {
         });
     }
 
+    /**
+     * Creates a flashing animation on the bottom row (8 cycles) with warning sound,
+     * then executes the callback to add the garbage row.
+     */
     private void flashIncomingGarbageRow(Runnable onFinished) {
         if (flashTimeline != null) flashTimeline.stop();
 
