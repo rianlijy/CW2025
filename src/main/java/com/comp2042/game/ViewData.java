@@ -25,7 +25,6 @@ public final class ViewData {
         this.brickData = MatrixOperations.copy(brickData);
         this.xPosition = xPosition;
         this.yPosition = yPosition;
-        // deep copy the provided matrices to be safe
         this.nextFiveBricks = nextFiveBricks == null ? new ArrayList<>() :
                 nextFiveBricks.stream().map(MatrixOperations::copy).collect(Collectors.toList());
         this.ghostBrick = MatrixOperations.copy(ghostBrick);
