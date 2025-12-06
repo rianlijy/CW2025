@@ -34,7 +34,7 @@ import javafx.scene.control.Label;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class GuiController implements Initializable {
+public class GuiController implements Initializable, GameListener {
 
     private static final int BRICK_SIZE = 20;
 
@@ -111,6 +111,9 @@ public class GuiController implements Initializable {
     public boolean isPause() {
         return isPause.get();
     }
+
+    @Override
+    public void onBoardChanged(int[][] boardMatrix) { refreshGameBackground(boardMatrix); }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

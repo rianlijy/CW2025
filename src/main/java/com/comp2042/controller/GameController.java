@@ -1,6 +1,8 @@
 package com.comp2042.controller;
 
 import com.comp2042.game.*;
+import java.util.List;
+import java.util.ArrayList;
 
 public class GameController implements InputEventListener {
 
@@ -12,6 +14,7 @@ public class GameController implements InputEventListener {
 
     public GameController(GuiController c) {
         viewGuiController = c;
+        addGameListener(viewGuiController);
         board.createNewBrick();
         this.garbageRow = new GarbageRow(viewGuiController);
         this.garbageRow.startGarbageTimer();
@@ -42,10 +45,10 @@ public class GameController implements InputEventListener {
             }
             boolean gameOver = board.createNewBrick();
             if (gameOver) {
-                viewGuiController.onGameOver();
+                notifyGameOver();
             }
-            viewGuiController.onGameBackgroundChanged(board.getBoardMatrix());
-            viewGuiController.onPreviewChanged(board.getViewData());
+            notifyBoardChanged();
+            notifyPreviewChanged();
             return new DownData(clearRow, board.getViewData(), true);
         }
         else {
@@ -75,10 +78,10 @@ public class GameController implements InputEventListener {
         }
 
         if (board.createNewBrick()) {
-            viewGuiController.onGameOver();
+            notifyGameOver();
         }
-        viewGuiController.onGameBackgroundChanged(board.getBoardMatrix());
-        viewGuiController.onPreviewChanged(board.getViewData());
+        notifyBoardChanged();
+        notifyPreviewChanged();
         return new DownData(clearRow, board.getViewData(), false);
     }
 
@@ -104,15 +107,15 @@ public class GameController implements InputEventListener {
     @Override
     public void createNewGame() {
         board.newGame();
-        viewGuiController.onGameBackgroundChanged(board.getBoardMatrix());
-        viewGuiController.onPreviewChanged(board.getViewData());
+        notifyBoardChanged();
+        notifyPreviewChanged();
         garbageRow.reset();
         garbageRow.startGarbageTimer();
     }
 
     public ViewData hold() {
         ViewData data = ((SimpleBoard) board).holdPiece();
-        viewGuiController.onHoldChanged(data);
+        notifyHoldChanged(data);
         return data;
     }
 
@@ -127,6 +130,36 @@ public class GameController implements InputEventListener {
             garbageRow.pause();
         } else {
             garbageRow.resume();
+        }
+    }
+
+    private final List<GameListener> listeners = new ArrayList<>();
+
+    public void addGameListener(GameListener listener) {
+        listeners.add(listener);
+    }
+
+    private void notifyGameOver() {
+        for (GameListener listener : listeners) {
+            listener.onGameOver();
+        }
+    }
+
+    private void notifyBoardChanged() {
+        for (GameListener listener : listeners) {
+            listener.onBoardChanged(board.getBoardMatrix());
+        }
+    }
+
+    private void notifyPreviewChanged() {
+        for (GameListener listener : listeners) {
+            listener.onPreviewChanged(board.getViewData());
+        }
+    }
+
+    private void notifyHoldChanged(ViewData data) {
+        for (GameListener listener : listeners) {
+            listener.onHoldChanged(data);
         }
     }
 }
