@@ -9,25 +9,18 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Slider;
 import javafx.scene.effect.Reflection;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 import javafx.scene.layout.VBox;
-import java.util.ArrayList;
-import java.util.List;
 import javafx.scene.control.Label;
 
 
@@ -89,8 +82,6 @@ public class GuiController implements Initializable, GameListener {
     private BoardRenderer boardRenderer;
 
     boolean spacePressed = false;
-
-
 
     public void setController(GameController controller) {
         this.controller = controller;
@@ -246,10 +237,6 @@ public class GuiController implements Initializable, GameListener {
         pauseLabel.setVisible(false);
     }
 
-    public void pauseGame(ActionEvent actionEvent) {
-        gamePanel.requestFocus();
-    }
-
     private void togglePause() {
         if (isGameOver.get()) return;
         boolean nowPaused = !isPause.get();
@@ -304,10 +291,6 @@ public class GuiController implements Initializable, GameListener {
 
     public boolean isGameOver() {
         return isGameOver.get();
-    }
-
-    public void onGameBackgroundChanged(int[][] boardMatrix) {
-        refreshGameBackground(boardMatrix);
     }
 
     public void onPreviewChanged(ViewData data) {

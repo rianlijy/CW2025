@@ -6,7 +6,6 @@ import com.comp2042.ui.Sound;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
-import javafx.application.Platform;
 
 public class InputHandler {
 

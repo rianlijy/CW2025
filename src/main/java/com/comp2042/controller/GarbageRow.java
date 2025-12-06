@@ -1,6 +1,5 @@
 package com.comp2042.controller;
 
-import com.comp2042.game.SimpleBoard;
 import com.comp2042.ui.ColorUtil;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;

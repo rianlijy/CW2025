@@ -31,15 +31,7 @@ public class Sound {
     public void startMusic() {
         musicPlayer.play();
     }
-    public void stopMusic() {
-        musicPlayer.stop();
-    }
-    public void pauseMusic() {
-        musicPlayer.pause();
-    }
-    public void resumeMusic() {
-        musicPlayer.play();
-    }
+
     public void playPlace() {
         placeSFX.stop();
         placeSFX.play();
