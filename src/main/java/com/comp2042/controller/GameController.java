@@ -17,6 +17,10 @@ public class GameController implements InputEventListener {
         addGameListener(viewGuiController);
         board.createNewBrick();
         this.garbageRow = new GarbageRow(viewGuiController);
+        garbageRow.setCallback(() -> {
+            ((SimpleBoard) board).addGarbageRow();
+            notifyBoardChanged();
+        });
         this.garbageRow.startGarbageTimer();
         viewGuiController.setEventListener(this);
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());

@@ -14,7 +14,11 @@ public class GarbageRow {
 
     private final GuiController gui;
 
-    // moved directly from GuiController
+    public interface GarbageCallback {
+        void onApplyGarbage();
+    }
+    private GarbageCallback callback;
+
     Timeline garbageTimer;
     Timeline flashTimeline;
 
@@ -22,10 +26,13 @@ public class GarbageRow {
         this.gui = gui;
     }
 
+    public void setCallback(GarbageCallback callback) {
+        this.callback = callback;
+    }
+
     public void startGarbageTimer() {
-        if (garbageTimer != null) {
-            garbageTimer.stop();
-        }
+        if (garbageTimer != null) garbageTimer.stop();
+
         garbageTimer = new Timeline(new KeyFrame(
                 Duration.seconds(30),
                 e -> startGarbageWarning()
@@ -48,7 +55,7 @@ public class GarbageRow {
         if (gui.isPause()) return;
 
         flashIncomingGarbageRow(() -> {
-            ((SimpleBoard) gui.getController().getBoard()).addGarbageRow();
+            if (callback != null) callback.onApplyGarbage();
             Platform.runLater(() -> {
                 gui.refreshGameBackground(gui.getController().getBoard().getBoardMatrix());
                 forceRedrawBottomRow();
@@ -58,17 +65,15 @@ public class GarbageRow {
     }
 
     private void flashIncomingGarbageRow(Runnable onFinished) {
-        if (flashTimeline != null) {
-            flashTimeline.stop();
-        }
+        if (flashTimeline != null) flashTimeline.stop();
 
         int[][] board = gui.getController().getBoard().getBoardMatrix();
         Rectangle[][] displayMatrix = gui.getDisplayMatrix();
         GridPane gamePanel = gui.getGamePanel();
 
         int TOTAL_ROWS = board.length;
-        int VISIBLE_ROWS = gamePanel.getRowConstraints().size();
-        int bottomVisibleRow = VISIBLE_ROWS - 1 + 2;
+        int visibleRows = gamePanel.getRowConstraints().size();
+        int bottomVisibleRow = visibleRows - 1 + 2;
 
         Rectangle[] rowRects = displayMatrix[bottomVisibleRow];
 
@@ -94,9 +99,7 @@ public class GarbageRow {
         }));
 
         flashTimeline.setOnFinished(ev -> {
-            if (!gui.isPause()) {
-                onFinished.run();
-            }
+            if (!gui.isPause()) onFinished.run();
             flashTimeline = null;
         });
 
@@ -107,20 +110,13 @@ public class GarbageRow {
         int[][] board = gui.getController().getBoard().getBoardMatrix();
         Rectangle[][] displayMatrix = gui.getDisplayMatrix();
         GridPane gamePanel = gui.getGamePanel();
-
-        int TOTAL_ROWS = board.length;
-        int VISIBLE_ROWS = gamePanel.getRowConstraints().size();
-        int bottomVisibleRow = VISIBLE_ROWS - 1 + 2;
-
+        int visibleRows = gamePanel.getRowConstraints().size();
+        int bottomVisibleRow = visibleRows - 1 + 2;
         Rectangle[] rowRects = displayMatrix[bottomVisibleRow];
-
         for (int col = 0; col < rowRects.length; col++) {
             int value = board[bottomVisibleRow][col];
             rowRects[col].setFill(ColorUtil.getFillColor(value));
-            rowRects[col].setArcWidth(0);
-            rowRects[col].setArcHeight(0);
             rowRects[col].setOpacity(1.0);
-            rowRects[col].setVisible(true);
         }
     }
 
