@@ -88,25 +88,12 @@ public class GuiController implements Initializable {
 
     private BoardRenderer boardRenderer;
 
-    private GarbageRow garbageRow;
-
     boolean spacePressed = false;
 
 
 
     public void setController(GameController controller) {
         this.controller = controller;
-        controller.getBoard().getScore().levelProperty().addListener((obs, oldV, newV) -> {
-            int level = newV.intValue();
-            double newSpeed = Math.max(200, 600 - (level - 1) * 100);
-
-            timeLine.stop();
-            timeLine.getKeyFrames().setAll(new KeyFrame(
-                    Duration.millis(newSpeed),
-                    ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
-            ));
-            timeLine.play();
-        });
     }
 
     public Rectangle[][] getDisplayMatrix() {
@@ -156,8 +143,6 @@ public class GuiController implements Initializable {
             sound.setVolume(v);
             Platform.runLater(() -> gamePanel.requestFocus());
         });
-        garbageRow = new GarbageRow(this);
-        garbageRow.startGarbageTimer();
     }
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
@@ -256,8 +241,6 @@ public class GuiController implements Initializable {
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
         pauseLabel.setVisible(false);
-        garbageRow.reset();
-        garbageRow.startGarbageTimer();
     }
 
     public void pauseGame(ActionEvent actionEvent) {
@@ -271,13 +254,12 @@ public class GuiController implements Initializable {
 
         if (nowPaused) {
             if (timeLine != null) timeLine.pause();
-            garbageRow.pause();
             showPauseOverlay();
         } else {
             hidePauseOverlay();
             if (timeLine != null) timeLine.play();
-            garbageRow.resume();
         }
+        notifyPause(nowPaused);
         gamePanel.requestFocus();
     }
 
@@ -319,5 +301,36 @@ public class GuiController implements Initializable {
 
     public boolean isGameOver() {
         return isGameOver.get();
+    }
+
+    public void onGameBackgroundChanged(int[][] boardMatrix) {
+        refreshGameBackground(boardMatrix);
+    }
+
+    public void onPreviewChanged(ViewData data) {
+        updatePreview(data);
+    }
+
+    public void onHoldChanged(ViewData data) {
+        updateHold(data);
+    }
+
+    public void onGameOver() {
+        gameOver();
+    }
+
+    public void blockFallSpeed(int speedMillis) {
+        if (timeLine == null) return;
+
+        timeLine.stop();
+        timeLine.getKeyFrames().setAll(new KeyFrame(
+                Duration.millis(speedMillis),
+                ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
+        ));
+        timeLine.play();
+    }
+
+    public void notifyPause(boolean paused) {
+        controller.onPauseStateChanged(paused);
     }
 }
