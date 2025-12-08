@@ -9,6 +9,10 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Main entry point for the Tetris game application.
+ * Initializes the JavaFX application, loads the FXML layout, and sets up the game controller.
+ */
 public class Main extends Application {
 
     @Override

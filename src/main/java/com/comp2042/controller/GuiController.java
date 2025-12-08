@@ -9,31 +9,29 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Slider;
 import javafx.scene.effect.Reflection;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 import javafx.scene.layout.VBox;
-import java.util.ArrayList;
-import java.util.List;
 import javafx.scene.control.Label;
 
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Main GUI controller for the Tetris game.
+ * Manages the JavaFX UI components, handles rendering, input, animations, and game state display.
+ * Implements both Initializable for FXML loading and GameListener for game state updates.
+ */
 public class GuiController implements Initializable, GameListener {
 
     private static final int BRICK_SIZE = 20;
@@ -90,8 +88,6 @@ public class GuiController implements Initializable, GameListener {
 
     boolean spacePressed = false;
 
-
-
     public void setController(GameController controller) {
         this.controller = controller;
     }
@@ -115,6 +111,9 @@ public class GuiController implements Initializable, GameListener {
     @Override
     public void onBoardChanged(int[][] boardMatrix) { refreshGameBackground(boardMatrix); }
 
+    /**
+     * Initializes UI components, loads fonts, sets up input handlers, and configures audio.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
@@ -148,6 +147,10 @@ public class GuiController implements Initializable, GameListener {
         });
     }
 
+    /**
+     * Initializes all renderers, creates rectangle arrays for board/piece/ghost,
+     * and starts the game loop timeline (600ms interval).
+     */
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         final int TOTAL_ROWS = boardMatrix.length;
         final int TOTAL_COLS = boardMatrix[0].length;
@@ -201,6 +204,10 @@ public class GuiController implements Initializable, GameListener {
         boardRenderer.refreshGameBackground(board);
     }
 
+    /**
+     * Handles automatic piece movement, plays sounds, shows score notifications,
+     * and updates the display. Only processes if game is not paused.
+     */
     private void moveDown(MoveEvent event) {
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onDownEvent(event);
@@ -234,6 +241,9 @@ public class GuiController implements Initializable, GameListener {
         isGameOver.setValue(Boolean.TRUE);
     }
 
+    /**
+     * Resets game state, hides overlays, restarts timeline, and resets hold display.
+     */
     public void newGame(ActionEvent actionEvent) {
         timeLine.stop();
         gameOverPanel.setVisible(false);
@@ -246,10 +256,10 @@ public class GuiController implements Initializable, GameListener {
         pauseLabel.setVisible(false);
     }
 
-    public void pauseGame(ActionEvent actionEvent) {
-        gamePanel.requestFocus();
-    }
-
+    /**
+     * Toggles pause state, pausing/resuming the timeline and showing/hiding pause overlay.
+     * Notifies game controller of state change.
+     */
     private void togglePause() {
         if (isGameOver.get()) return;
         boolean nowPaused = !isPause.get();
@@ -304,10 +314,6 @@ public class GuiController implements Initializable, GameListener {
 
     public boolean isGameOver() {
         return isGameOver.get();
-    }
-
-    public void onGameBackgroundChanged(int[][] boardMatrix) {
-        refreshGameBackground(boardMatrix);
     }
 
     public void onPreviewChanged(ViewData data) {

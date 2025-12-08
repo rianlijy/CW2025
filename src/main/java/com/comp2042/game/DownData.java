@@ -1,5 +1,9 @@
 package com.comp2042.game;
 
+/**
+ * Downward move operation.
+ * Store whether the piece was locked, rows cleared, and updated view data.
+ */
 public final class DownData {
     private final ClearRow clearRow;
     private final ViewData viewData;

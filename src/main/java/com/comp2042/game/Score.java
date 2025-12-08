@@ -3,6 +3,11 @@ package com.comp2042.game;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
+/**
+ * Manages the game score and level progression.
+ * Tracks the current score, level, and total lines cleared.
+ * Provides JavaFX properties for UI binding.
+ */
 public final class Score {
 
     private final IntegerProperty score = new SimpleIntegerProperty(0);

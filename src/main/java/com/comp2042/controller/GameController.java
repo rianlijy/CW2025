@@ -4,6 +4,10 @@ import com.comp2042.game.*;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * Main game controller that coordinates between the game logic (Board) and the UI (GuiController).
+ * Handles input events, manages game state, and notifies listeners of game changes.
+ */
 public class GameController implements InputEventListener {
 
     private Board board = new SimpleBoard(25, 10);
@@ -12,6 +16,10 @@ public class GameController implements InputEventListener {
 
     private GarbageRow garbageRow;
 
+    /**
+     * Initializes game board, sets up listeners, configures garbage row system,
+     * binds UI properties, and sets up level-based speed adjustment.
+     */
     public GameController(GuiController c) {
         viewGuiController = c;
         addGameListener(viewGuiController);
@@ -34,6 +42,11 @@ public class GameController implements InputEventListener {
         viewGuiController.updatePreview(board.getViewData());
     }
 
+    /**
+     * Handles downward movement. If piece locks, merges to board, clears rows,
+     * calculates score (base × level), spawns new piece, and notifies listeners.
+     * Awards 1 point for user soft drops.
+     */
     @Override
     public DownData onDownEvent(MoveEvent event) {
         boolean canMove = board.moveBrickDown();
@@ -63,6 +76,10 @@ public class GameController implements InputEventListener {
         }
     }
 
+    /**
+     * Instantly drops piece to bottom, awards 1 point per row dropped,
+     * then merges, clears rows, and spawns new piece.
+     */
     public DownData hardDrop() {
         int rowsDropped = 0;
         while (board.moveBrickDown()) {

@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Immutable data class to render the game view.
+ * Includes the current brick, its position, ghost piece, next five pieces, and held piece.
+ */
 public final class ViewData {
 
     private final int[][] brickData;
@@ -18,7 +22,9 @@ public final class ViewData {
     private final int[][] heldBrick;
     public int[][] getHeldBrick() { return MatrixOperations.copy(heldBrick); }
 
-
+    /**
+     * Constructs ViewData with all game state information
+     */
     public ViewData(int[][] brickData, int xPosition, int yPosition,
                     List<int[][]> nextFiveBricks,
                     int[][] ghostBrick, int ghostX, int ghostY, int[][] heldBrick) {

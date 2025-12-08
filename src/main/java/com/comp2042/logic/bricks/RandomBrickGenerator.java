@@ -6,6 +6,10 @@ import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Generates Tetris bricks using a completely random selection algorithm.
+ * Each brick type has an equal probability of being selected.
+ */
 public class RandomBrickGenerator implements BrickGenerator {
 
     private final List<Brick> brickList;

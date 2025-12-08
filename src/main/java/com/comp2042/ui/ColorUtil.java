@@ -3,6 +3,10 @@ package com.comp2042.ui;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
+/**
+ * Utility class for mapping brick type IDs to their corresponding colors.
+ * Provides a static method to retrieve the fill color for each Tetris piece type.
+ */
 public class ColorUtil {
 
     public static Paint getFillColor(int i) {

@@ -10,6 +10,11 @@ import java.util.stream.Collectors;
 
 import java.awt.*;
 
+/**
+ * Implementation of the Board interface representing the main game board.
+ * Manages the game state including the board matrix, current piece, next pieces,
+ * held piece, score, and all game logic operations.
+ */
 public class SimpleBoard implements Board {
 
     private final int width;
@@ -84,7 +89,11 @@ public class SimpleBoard implements Board {
             return true;
         }
     }
-    
+
+    /**
+     * Rotates the current piece counter-clockwise with wall kick mechanics.
+     * Tries multiple offset positions if the rotation would cause a collision.
+     */
     @Override
     public boolean rotateLeftBrick() {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
@@ -192,6 +201,10 @@ public class SimpleBoard implements Board {
         createNewBrick();
     }
 
+    /**
+     * Swaps the current piece with the held piece, or stores current if none held.
+     * Can only be used once per piece placement.
+     */
     public ViewData holdPiece() {
         if (holdUsed) {
             return getViewData();
@@ -222,6 +235,9 @@ public class SimpleBoard implements Board {
         return MatrixOperations.copy(heldBrick.getShapeMatrix().get(0));
     }
 
+    /**
+     * Adds a garbage row at the bottom with one random hole, shifting all rows up.
+     */
     public void addGarbageRow() {
         for (int row = 0; row < width - 1; row++) {
             currentGameMatrix[row] = currentGameMatrix[row + 1];
